@@ -1,620 +1,776 @@
-local Name = "Fire Doors [2.0.1]"
-local loadInLobby = false
-local quickLoad = true
-local t = true
-
-local NotificationHolder = loadstring(game:HttpGet("https://raw.githubusercontent.com/BocusLuke/UI/main/STX/Module.Lua"))()
-local Notification = loadstring(game:HttpGet("https://raw.githubusercontent.com/BocusLuke/UI/main/STX/Client.Lua"))()
-function Notificate(title, text, timee)
-	task.spawn(function()
-		local notif = Instance.new("Sound");notif.Parent = game.SoundService;notif.SoundId = "rbxassetid://4590657391";notif.Volume = 5;notif:Play();notif.Stopped:Wait();notif:Destroy()
-	end)
-	Notification:Notify(
-		{Title = title, Description = text},
-		{OutlineColor = Color3.fromRGB(80, 80, 80),Time = timee or 5, Type = "image"},
-		{Image = "http://www.roblox.com/asset/?id=6023426923", ImageColor = Color3.fromRGB(255, 84, 84)}
-	)
-end
-
-Notificate(Name,"Preparing to load "..Name.."...")
-if not quickLoad then
-	wait(2)
-else
-	wait(0.1)
-end
-
-
-
-if not fireproximityprompt then
-	Notificate(Name,"LMAO, GO GET A BETTER EXECUTOR")
-	return
-end
-
-if not quickLoad then
-	wait(1)
-else
-	wait(0.1)
-end
-function Exist(part)
-	if part and part.Parent then
-		return true
-	end
-	return false
-end
-if _G["loading "..Name] == true then
-	Notificate(Name,'Script it loading, wait...')
-	return
-end
-_G["loading "..Name] = true
-if _G["loaded "..Name] == true then
-	Notificate(Name,'The script is already loaded! Try pressing "Z"')
-	return
-end
-if not game.ReplicatedStorage:FindFirstChild("GameData") or not game.ReplicatedStorage.GameData:FindFirstChild("Floor") or not game.ReplicatedStorage.GameData.Floor:IsA("StringValue") then
-	Notificate(Name,"You must be in doors to execute that script!")
-	return 
-elseif game.ReplicatedStorage:FindFirstChild("GameData") and game.ReplicatedStorage.GameData:FindFirstChild("Floor") and game.ReplicatedStorage.GameData.Floor:IsA("StringValue") then
-	if workspace:FindFirstChild("Lobby") and workspace.Lobby:FindFirstChild("Parts") and #workspace.Lobby.Parts:GetChildren() >= 1 and not loadInLobby then
-		Notificate(Name,"You must be in game [Not lobby] to execute that script!")
-		return
-	else
-		Notificate(Name,"Almost loaded "..Name.."...")
-	end
-end
-
-if not quickLoad then
-	wait(5)
-else
-	wait(0.1)
-end
-Notificate(Name,"If you closed the gui, press Z, that will fully unload the script!")
-local autoLoot = false
-local activateDistance = 6
+local actualName = "Fire Doors"
+local version = "2.0.2"
+local fullName = actualName.." ["..version.."]"
 local ppNames = {
 	["ModulePrompt"] = true,
 	["ActivateEventPrompt"] = true,
 	["LootPrompt"] = true,
 	["SkipPrompt"] = true,
 	["HerbPrompt"] = true,
+	["AwesomePrompt"] = true,
 }
-local ESP = {
-	["Doors"] = {
-		["Door"] = {
-			["Class"] = "MeshPart",
-			["Color"] = Color3.fromRGB(255,255,0),
-			["DescendantOf"] = workspace.CurrentRooms,
-			["UseHL"] = true,
-		},
-		["KeyObtain"] = {
-			["Class"] = "Model",
-			["Color"] = Color3.fromRGB(255,255,0),
-			["DescendantOf"] = workspace.CurrentRooms,
-			["UseHL"] = false,
-		},
-		["LeverForGate"] = {
-			["Class"] = "Model",
-			["Color"] = Color3.fromRGB(255,255,0),
-			["DescendantOf"] = workspace.CurrentRooms,
-			["UseHL"] = false,
-		},
-		["LiveHintBook"] = {
-			["Class"] = "Model",
-			["Color"] = Color3.fromRGB(0,255,0),
-			["DescendantOf"] = workspace.CurrentRooms,
-			["UseHL"] = false,
-		},
-	},
-
-	["Enteties"] = {
-		["RushMoving"] = {
-			["Class"] = "Model",
-			["Color"] = Color3.fromRGB(100,0,0),
-			["DescendantOf"] = workspace,
-			["UseHL"] = false,
-		},
-		["AmbushMoving"] = {
-			["Class"] = "Model",
-			["Color"] = Color3.fromRGB(150,255,0),
-			["DescendantOf"] = workspace,
-			["UseHL"] = false,
-		},
-		["SeekMoving"] = {
-			["Class"] = "Model",
-			["Color"] = Color3.fromRGB(100,0,0),
-			["DescendantOf"] = workspace,
-			["UseHL"] = true,
-		},
-		["FigureRagdoll"] = {
-			["Class"] = "Model",
-			["Color"] = Color3.fromRGB(170, 82, 84),
-			["DescendantOf"] = workspace.CurrentRooms,
-			["UseHL"] = true,
-		},
-	},
+local connectedFunctions = {}
+local bools = {
+	["nill"] = true,
+	["DoorESP"] = false,
+	["EntityESP"] = false,
+	["PlayerESP"] = false,
+	["AutoInteract"] = false,
+	["Noclipping"] = false,
+	["EnableAllInteractables"] = false,
+	["NotifyEntities"] = false,
+	["God"] = false,
+	["ItemESP"] = false,
 }
-local function isNumber(str)
-	if tonumber(str) ~= nil or str == 'inf' then
-		return true
-	end
-end
-_G["loading "..Name] = false
-_G["loaded "..Name] = true
-local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/xHeptc/Kavo-UI-Library/main/source.lua"))()
-local Window = Library.CreateLib(Name, "BloodTheme")
-local Tab = Window:NewTab("Main")
-local Section = Tab:NewSection("The main page")
-Section:NewKeybind("!Unload half script!", "Many features after thaw will wont work!", Enum.KeyCode.Z, function()
-	if t then
-		_G["loaded "..Name] = false
-		t = false
-		Notificate(Name,"Unloaded half of script!")
-	end
-end)
-Section:NewKeybind("Toggle UI", "", Enum.KeyCode.X, function()
-	Library:ToggleUI()
-end)
-local ur = 60
-Section:NewTextBox("Update rate", "Update rate of scripts (per fps)", function(txt)
-	if isNumber(txt) then
-		ur = tonumber(txt)
-	end
-end)
-local Tab = Window:NewTab("Character")
-local Section = Tab:NewSection("Character settings")
-local noclip = false
+local Font = Enum.Font.Oswald
+local logoImage = "http://www.roblox.com/asset/?id=876744268"
 local plr = game.Players.LocalPlayer
 local char = plr.Character or plr.CharacterAdded:Wait()
-local hrp = char:FindFirstChild("Collision") or char:FindFirstChild("HumanoidRootPart")
+local gui = plr.PlayerGui or plr:WaitForChild("PlayerGui") or game.CoreGui
+local bp = plr.Backpack or plr:WaitForChild("Backpack")
+local hrp = char:FindFirstChild("HumanoidRootPart") or char:FindFirstChild("Collision") or char:FindFirstChildOfClass("BasePart")
 local hum = char:WaitForChild("Humanoid")
-local instant = function(func)
-	return coroutine.wrap(func)()
-end
-local function getDistance(from)
-	if from and from:IsA("BasePart") then
-		return (hrp.Position-from.Position).Magnitude
-	elseif from and from:IsA("Model") then
-		return (hrp.Position-from.WorldPivot.Position).Magnitude
-	elseif from and from:IsA("Attachment") then
-		return (hrp.Position-from.WorldPosition).Magnitude
-	end
-end
-function fire(v)
-	if Exist(v) and Exist(v.Parent) and ppNames[v.Name] and getDistance(v.Parent) <= activateDistance and v.Enabled == true and v.ActionText ~= "Close" and autoLoot and t then
-		if workspace.CurrentRooms:FindFirstChild("50") then
-			if v:IsDescendantOf(workspace.CurrentRooms["50"].Door) then
-				return
-			end
-		elseif workspace.CurrentRooms:FindFirstChild("52") then
-			if v:IsDescendantOf(workspace.CurrentRooms["52"]) then
-				return
-			end
-		elseif workspace.CurrentRooms:FindFirstChild("100") then
-			if v:IsDescendantOf(workspace.CurrentRooms["100"].ElevatorBreaker) or v:IsDescendantOf(workspace.CurrentRooms["100"].IndustrialGate) then
-				return
-			end
+local event = Instance.new("BindableEvent",plr)
+local fireproximityprompt = fireproximityprompt or function(Obj, Amount, Skip)
+	local Skip = Skip or false
+	if Obj and Obj.Parent and Obj:IsA("ProximityPrompt") then 
+		local Amount = Amount or 1
+		if Amount == 0 or Amount <= 0 then
+			Amount = 1
 		end
-		fireproximityprompt(v,1,true)
+		local PromptTime = Obj.HoldDuration
+		if Skip == true then 
+			Obj.HoldDuration = 0
+		end
+		for i = 1, Amount do 
+			Obj:InputHoldBegin()
+			if not Skip then 
+				task.wait(Obj.HoldDuration)
+			end
+			Obj:InputHoldEnd()
+		end
+		Obj.HoldDuration = PromptTime
 	end
 end
-local waitFrames = function(times)
+local rs = function(times)
 	local times = times or 1
+	if times == 0 or times <= 0 then
+		times = 1
+	end
+	times = math.round(times)
 	for i=1,times do
 		game["Run Service"].Stepped:Wait()
 	end
 end
-local rs = waitFrames
-Section:NewToggle("Noclip", "Makes you walk trough the walls", function(state)
-	noclip = state
-end)
-Section:NewSlider("Extra Speed", "Makes you walk faster", 6.4, 0.1, function(s)
-	hum:SetAttribute("SpeedBoost",s)
-end)
-local jumpAllowed = false
-game.UserInputService.JumpRequest:Connect(function()
-	if jumpAllowed and hum.FloorMaterial ~= Enum.Material.Air and hum.FloorMaterial ~= nil and t then
-		hum.UseJumpPower = true
-		hum.JumpPower = 15
-		hum:ChangeState(Enum.HumanoidStateType.Jumping)
+local closed = false
+local distanceMult = 0
+local function randomString(amoutOfSymbols)
+	local symbols = string.split([[qSEPwSEPeSEPrSEPtSEPySEPuSEPiSEPoSEPpSEPaSEPsSEPdSEPfSEPgSEPhSEPjSEPkSEPlSEPzSEPxSEPcSEPvSEPbSEPnSEPmSEP1SEP2SEP3SEP4SEP5SEP6SEP7SEP8SEP9SEP0SEP-SEP=SEP`SEP\SEP/SEP.SEP,SEP+SEP_SEP*SEP;SEP:SEP'SEP"SEP]SEP[SEP SEP|SEP!SEP@SEP#SEP$SEP%SEP^SEP&SEP&SEP(SEP)SEP?SEP 
+]],"SEP")
+	local context = ""
+	amoutOfSymbols = amoutOfSymbols or math.random(1, 250)
+	if amoutOfSymbols == 0 or amoutOfSymbols <= 0 then
+		amoutOfSymbols = math.random(1,250)
 	end
-end)
-Section:NewToggle("Jump", "Allow you jump in the game!", function(state)
-	jumpAllowed = state
-end)
-local Tab = Window:NewTab("Interactables")
-local Section = Tab:NewSection("Interactables settings")
-Section:NewSlider("Distance multiplier", "You will interact with drawest, keys and etc more than normally", 2.2, 1, function(s)
-	activateDistance = 6 * s
-	for i,v in pairs(workspace:GetDescendants()) do
-		if v and v:IsA("ProximityPrompt") then
-			v.MaxActivationDistance = activateDistance
+	for i=1,amoutOfSymbols do
+		local uorl = false
+		if math.random(1,2) == 1 then
+			uorl = true
 		end
+		local addSymbol = symbols[math.random(1,#symbols)]
+		if uorl then
+			addSymbol = string.upper(addSymbol)
+		end
+		context = context..addSymbol
 	end
-end)
-local instantInteract = false
-Section:NewToggle("Instant Activate", "Will make you interact with items instantly", function(state)
-	instantInteract = state
-end)
-game.ProximityPromptService.PromptButtonHoldBegan:Connect(function(prompt)
-	if instantInteract and t then
-		prompt:InputHoldEnd()
-		fireproximityprompt(prompt,1,true)
+	return context
+end
+event.Name = randomString()
+coroutine.wrap(function()
+	while wait(1) do
+		event.Name = randomString()
 	end
-end)
-Section:NewToggle("Auto loot", "Will automatically loot dressers", function(state)
-	autoLoot = state
-end)
-local doorESP = false
-local entityESP = false
-function MakeESP(target:Instance)
-	if t then
-		if not target:FindFirstChild("ESP FOLDER") then
+end)()
+local function esp(target,color,text,boolName)
+	local color = color or Color3.fromRGB(255,255,255)
+	if target then
+		text = text or target.Name
+	end
+	local boolName = boolName or "nill"
+	if bools[boolName] == nil then
+		boolName = "nill"
+	end
+	local function esp(target)
+		local espDetected = false
+		local fldr = nil
+		if target and target.Parent  then
+			for i,v in pairs(target:GetChildren()) do
+				if v and v.Parent and v:IsA("Folder") and string.match(string.lower(v:GetFullName()),"esp") then
+					espDetected = true
+					fldr = v
+				end
+			end
+		end
+		if target and target.Parent and not espDetected then
 			local folder = Instance.new("Folder",target)
-			folder.Name = "ESP FOLDER"
-			local hl = Instance.new("Highlight",folder)
-			hl.Adornee = target
-			local bbg = Instance.new("BillboardGui",folder)
-			bbg.Adornee = target
-			bbg.AlwaysOnTop = true
-			bbg.MaxDistance = 3000
-			bbg.Size = UDim2.fromOffset(30,30)
-			local circle = Instance.new("Frame",bbg)
-			circle.Size = UDim2.fromOffset(10,10)
-			circle.AnchorPoint = Vector2.new(0.5,0.5)
-			circle.Position = UDim2.fromOffset(15,5)
-			local corner = Instance.new("UICorner",circle)
-			corner.CornerRadius = UDim.new(1,0)
-			local stroke = Instance.new("UIStroke",circle)
-			stroke.Thickness = 2
-			stroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Contextual
-			local txt = Instance.new("TextLabel",bbg)
+			folder.Name = "esp"..randomString()
+			local esp = Instance.new("Highlight",folder)
+			esp.OutlineColor = color
+			esp.FillColor = color
+			esp.Adornee = target
+			esp.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
+			esp.OutlineTransparency = 0.75
+			esp.OutlineTransparency = 0
+			local bg = Instance.new("BillboardGui",folder)
+			bg.Size = UDim2.fromOffset(100,100)
+			bg.Brightness = 1
+			bg.AlwaysOnTop = true
+			bg.MaxDistance = 1000
+			bg.Adornee = target
+			local frame = Instance.new("Frame",bg)
+			frame.BackgroundColor3 = color
+			frame.AnchorPoint = Vector2.new(0.5,0.5)
+			frame.Position = UDim2.fromScale(0.5,0.5)
+			frame.Size = UDim2.fromScale(0.1,0.1)
+			local txt = Instance.new("TextLabel",bg)
+			txt.Text = text
 			txt.BackgroundTransparency = 1
-			txt.Position = UDim2.fromOffset(15,15)
+			txt.Size = UDim2.fromScale(1,0.2)
 			txt.AnchorPoint = Vector2.new(0.5,0.5)
-			txt.Size = UDim2.fromOffset(30,5)
-			local stroke2 = stroke:Clone()
-			stroke2.Parent = txt
-			instant(function()
-				local yes = false
+			txt.Position = UDim2.fromScale(0.5,0.65)
+			txt.Font = Font
+			txt.TextScaled = true
+			txt.TextColor3 = color
+			local stroke = Instance.new("UIStroke",txt)
+			stroke.Thickness = 3
+			stroke.Color = Color3.fromRGB(0,0,0)
+			local stroke = Instance.new("UIStroke",frame)
+			stroke.Thickness = 3
+			stroke.Color = Color3.fromRGB(0,0,0)
+			local corner = Instance.new("UICorner",frame)
+			corner.CornerRadius = UDim.new(1,0)
+			for i,v in pairs(folder:GetDescendants()) do
+				if v then
+					v.Name = randomString()
+				end
+			end
+			coroutine.wrap(function()
 				repeat
-					if not t then
-						yes = true
-						folder:Destroy()
+					if target and target.Parent then
+						if bools[boolName] == true then
+							esp.Enabled = bools[boolName]
+							bg.Enabled = esp.Enabled
+						else
+							esp.Enabled = false
+							bg.Enabled = esp.Enabled
+						end
 					end
-					rs(ur)
-				until yes
-			end)
-			return hl,circle,txt
-		else
-			local f = target:FindFirstChild("ESP FOLDER")
-			instant(function()
-				local yes = false
-				repeat
-					if not t then
-						yes = true
-						f:Destroy()
-					end
-					rs(ur)
-				until yes
-			end)
-			return f.Highlight,f.BillboardGui.Frame,f.BillboardGui.TextLabel
+					rs(1)
+				until not target
+			end)()
+			return esp,frame,txt
+		elseif target and target.Parent and espDetected and fldr then
+			return fldr:FindFirstChildOfClass("Highlight"),fldr:FindFirstChildOfClass("BillboardGui"):FindFirstChildOfClass("Frame"),fldr:FindFirstChildOfClass("BillboardGui"):FindFirstChildOfClass("TextLabel")
 		end
 	end
+	if not target:IsA("Instance") then return end
+	esp(target)
 end
-workspace.DescendantAdded:Connect(function(va)
-	if Exist(va) and t then
-		for i,v in pairs(va:GetDescendants()) do
-			if Exist(v) and v:IsA("ProximityPrompt") and t then
-				instant(function()
-					repeat
-						fire(v)
-						v.MaxActivationDistance = activateDistance
-						rs(ur/6)
-					until not v or not t
-				end)
+function descendant(d)
+	coroutine.wrap(function()
+		if d then
+			if d:IsA("BasePart") then
+				d.Transparency += 0.01
+				d.CanQuery = false
 			end
-			if Exist(v) and t then
-				local f = ESP.Doors
-				if f[v.Name] and v:IsA(f[v.Name].Class) and v:IsDescendantOf(f[v.Name].DescendantOf) then
-					instant(function()
-						repeat
-							local h,c,t = MakeESP(v)
-							h.OutlineColor = f[v.Name].Color
-							h.FillColor = f[v.Name].Color
-							c.BackgroundColor3 = f[v.Name].Color
-							t.TextColor3 = f[v.Name].Color
-							if f[v.Name].UseHL == false then
-								h.FillTransparency = 1
-								h.OutlineTransparency = 1
-							else
-								h.FillTransparency = 0.5
-								h.OutlineTransparency = 0
-							end
-							if Exist(v) and v.Name == "Door" then
-								local txt = ""
-								if v.Parent:FindFirstChild("Sign") and v.Parent.Sign:FindFirstChild("Stinker") then
-									txt = v.Parent.Sign.Stinker.Text
-								else
-									txt = "Door"
-								end
-								t.Text = txt
-							elseif Exist(v) and v.Name == "KeyObtain" then
-								t.Text = "Key ["..v:WaitForChild("Sign"):WaitForChild("Label").Text.."]"
-							elseif Exist(v) and v.Name == "LiveHintBook" then
-								t.Text = "Hint book"
-							elseif Exist(v) then
-								t.Text = v.Name
-							end
-							rs(ur)
-						until not v or not t
-					end)
+			if d:IsA("ProximityPrompt") and ppNames[d.Name] then
+				repeat
+					if not d then return end
+					d.MaxActivationDistance = 6*(distanceMult+1)
+					if bools.AutoInteract and getDistance(d.Parent,hrp) and getDistance(d.Parent,hrp) <= d.MaxActivationDistance and d.Enabled and d.ActionText ~= "Close" and d.ObjectText ~= "Close" then
+						fireproximityprompt(d,1,true)
+					end
+					if d.Enabled == false and bools.EnableAllInteractables and d.ActionText ~= "Close" and d.ObjectText ~= "Close" then
+						d.Enabled = true
+					end
+					if d.ActionText == "Close" or d.ObjectText == "Close" then
+						d.Enabled = not bools.AutoInteract
+					end
+					if d.Name == "ModulePrompt" and d.Parent:FindFirstChild("Hitbox") and d.Parent:IsA("Model") or d.Name == "ActivateEventPropmt" and d.Parent:FindFirstChild("Base") and d.Parent:IsA("Model") then
+						esp(d.Parent,Color3.fromRGB(0,150,0),string.split(d.Parent.Name,"Obtain")[1],"ItemESP")
+					end
+					rs(1)
+				until not d or closed
+			end
+			if d:IsA("Model") then
+				if d.Parent == workspace and string.match(d.Name,"Moving") then
+					event:Fire("Entity",d)
 				end
-				local f = ESP.Enteties
-				if f[v.Name] and v:IsA(f[v.Name].Class) and v:IsDescendantOf(f[v.Name].DescendantOf) then
-					instant(function()
-						repeat
-							local h,c,t = MakeESP(v)
-							h.OutlineColor = f[v.Name].Color
-							h.FillColor = f[v.Name].Color
-							c.BackgroundColor3 = f[v.Name].Color
-							t.TextColor3 = f[v.Name].Color
-							if f[v.Name].UseHL == false then
-								h.FillTransparency = 1
-								h.OutlineTransparency = 1
-							else
-								h.FillTransparency = 0.5
-								h.OutlineTransparency = 0
-							end
-							if Exist(v) and v.Name == "RushMoving" then
-								t.Text = "Rush"
-							elseif Exist(v) and v.Name == "AmbushMoving" then
-								t.Text = "Ambush"
-							elseif Exist(v) and v.Name == "SeekMoving" then
-								t.Text = "Seek"
-							elseif Exist(v) and v.Name == "FigureRagdoll" then
-								t.Text = "Figure"
-							end
-							rs(ur)
-						until not v or not t
-					end)
+				if d.Name == "FigureRagdoll" and d.Parent ~= workspace then
+					esp(d,Color3.fromRGB(255,0,0),"Figure","EntityESP")
+				end
+				if d.Name == "Door" and isnumber(d.Parent.Name) then
+					esp(d:WaitForChild("Door"),Color3.fromRGB(170, 109, 35),tostring(tonumber(d.Parent.Name)+1),"DoorESP")
 				end
 			end
 		end
-		if va:IsA("ProximityPrompt") and t then
-			repeat
-				fire(va)
-				va.MaxActivationDistance = activateDistance
-				rs(ur/6)
-			until not va or not t
-		end
-		local v = va
-		if Exist(v) and t then
-			local f = ESP.Doors
-			if f[v.Name] and v:IsA(f[v.Name].Class) and v:IsDescendantOf(f[v.Name].DescendantOf) then
-				instant(function()
-					repeat
-						local h,c,t = MakeESP(v)
-						h.OutlineColor = f[v.Name].Color
-						h.FillColor = f[v.Name].Color
-						c.BackgroundColor3 = f[v.Name].Color
-						t.TextColor3 = f[v.Name].Color
-						t.Parent.Enabled = doorESP
-						h.Enabled = doorESP
-						if f[v.Name].UseHL == false then
-							h.FillTransparency = 1
-							h.OutlineTransparency = 1
-						else
-							h.FillTransparency = 0.5
-							h.OutlineTransparency = 0
-						end
-						if Exist(v) and v.Name == "Door" then
-							local txt = ""
-							if v.Parent:FindFirstChild("Sign") and v.Parent.Sign:FindFirstChild("Stinker") then
-								txt = v.Parent.Sign.Stinker.Text
-							else
-								txt = "Door"
-							end
-							t.Text = txt
-						elseif Exist(v) and v.Name == "KeyObtain" then
-							t.Text = "Key ["..v:WaitForChild("Sign"):WaitForChild("Label").Text.."]"
-						elseif Exist(v) and v.Name == "LiveHintBook" then
-							t.Text = "Hint book"
-						elseif Exist(v) then
-							t.Text = v.Name
-						end
-						rs(ur)
-					until not v or not t
-				end)
-			end
-			local f = ESP.Enteties
-			if f[v.Name] and v:IsA(f[v.Name].Class) and v:IsDescendantOf(f[v.Name].DescendantOf) then
-				instant(function()
-					repeat
-						local h,c,t = MakeESP(v)
-						h.OutlineColor = f[v.Name].Color
-						h.FillColor = f[v.Name].Color
-						c.BackgroundColor3 = f[v.Name].Color
-						t.TextColor3 = f[v.Name].Color
-						t.Parent.Enabled = entityESP
-						h.Enabled = entityESP
-						if f[v.Name].UseHL == false then
-							h.FillTransparency = 1
-							h.OutlineTransparency = 1
-						else
-							h.FillTransparency = 0.5
-							h.OutlineTransparency = 0
-						end
-						if Exist(v) and v.Name == "RushMoving" then
-							t.Text = "Rush"
-						elseif Exist(v) and v.Name == "AmbushMoving" then
-							t.Text = "Ambush"
-						elseif Exist(v) and v.Name == "SeekMoving" then
-							t.Text = "Seek"
-						elseif Exist(v) and v.Name == "FigureRagdoll" then
-							t.Text = "Figure"
-						end
-						rs(ur)
-					until not v or not t
-				end)
-			end
-		end
+	end)()
+end
+function isnumber(txt)
+	if tonumber(txt) ~= nil or txt == "inf" then
+		return true
+	else
+		return false
 	end
-end)
-for i,v in pairs(workspace:GetDescendants()) do
-	if Exist(v) and v:IsA("ProximityPrompt") and t then
-		instant(function()
-			repeat
-				fire(v)
-				v.MaxActivationDistance = activateDistance
-				rs(ur/6)
-			until not v or not t
-		end)
-	end
-	if Exist(v) and t then
-		local f = ESP.Doors
-		if f[v.Name] and v:IsA(f[v.Name].Class) and v:IsDescendantOf(f[v.Name].DescendantOf) then
-			instant(function()
-				repeat
-					local h,c,t = MakeESP(v)
-					h.OutlineColor = f[v.Name].Color
-					h.FillColor = f[v.Name].Color
-					c.BackgroundColor3 = f[v.Name].Color
-					t.TextColor3 = f[v.Name].Color
-					t.Parent.Enabled = doorESP
-					h.Enabled = doorESP
-					if f[v.Name].UseHL == false then
-						h.FillTransparency = 1
-						h.OutlineTransparency = 1
-					else
-						h.FillTransparency = 0.5
-						h.OutlineTransparency = 0
-					end
-					if Exist(v) and v.Name == "Door" then
-						local txt = ""
-						if v.Parent:FindFirstChild("Sign") and v.Parent.Sign:FindFirstChild("Stinker") then
-							txt = v.Parent.Sign.Stinker.Text
-						else
-							txt = "Door"
-						end
-						t.Text = txt
-					elseif Exist(v) and v.Name == "KeyObtain" then
-						t.Text = "Key ["..v:WaitForChild("Sign"):WaitForChild("Label").Text.."]"
-					elseif Exist(v) and v.Name == "LiveHintBook" then
-						t.Text = "Hint book"
-					elseif Exist(v) then
-						t.Text = v.Name
-					end
-					rs(ur)
-				until not v or not t
-			end)
+end
+local inGodMode = false
+function getDistance(I1,I2)
+	if I1 and I2 then
+		local function get(I)
+			if I:IsA("BasePart") then
+				return I.Position
+			end
+			if I:IsA("Model") then
+				return I.WorldPivot.Position
+			end
+			if I:IsA("Attachment") then
+				return I.WorldPosition
+			end
+			return nil
 		end
-		local f = ESP.Enteties
-		if f[v.Name] and v:IsA(f[v.Name].Class) and v:IsDescendantOf(f[v.Name].DescendantOf) then
-			instant(function()
-				repeat
-					local h,c,t = MakeESP(v)
-					h.OutlineColor = f[v.Name].Color
-					h.FillColor = f[v.Name].Color
-					c.BackgroundColor3 = f[v.Name].Color
-					t.TextColor3 = f[v.Name].Color
-					t.Parent.Enabled = entityESP
-					h.Enabled = entityESP
-					if f[v.Name].UseHL == false then
-						h.FillTransparency = 1
-						h.OutlineTransparency = 1
-					else
-						h.FillTransparency = 0.5
-						h.OutlineTransparency = 0
-					end
-					if Exist(v) and v.Name == "RushMoving" then
-						t.Text = "Rush"
-					elseif Exist(v) and v.Name == "AmbushMoving" then
-						t.Text = "Ambush"
-					elseif Exist(v) and v.Name == "SeekMoving" then
-						t.Text = "Seek"
-					elseif Exist(v) and v.Name == "FigureRagdoll" then
-						t.Text = "Figure"
-					end
-					rs(ur)
-				until not v or not t
-			end)
+		if get(I1) and get(I2) then
+			return (get(I1)-get(I2)).Magnitude
 		end
 	end
 end
-local Tab = Window:NewTab("Lighting")
-local Section = Tab:NewSection("Control lights in the game")
-local fb = false
-Section:NewToggle("Brightness", "Will delete the shadows", function(state)
-	fb = state
-	if fb then
-		game.Lighting.Ambient = Color3.new(1,1,1)
-		game.Lighting.OutdoorAmbient = Color3.new(1,1,1)
-		game.Lighting.Brightness = 1
-		game.Lighting.ColorShift_Bottom = Color3.new(1,1,1)
-		game.Lighting.FogEnd = 100000
-	end
-end)
-game.Lighting.Changed:Connect(function()
-	if fb and t then
-		game.Lighting.Ambient = Color3.new(1,1,1)
-		game.Lighting.OutdoorAmbient = Color3.new(1,1,1)
-		game.Lighting.Brightness = 1
-		game.Lighting.ColorShift_Bottom = Color3.new(1,1,1)
-		game.Lighting.FogEnd = 100000
-	end
-end)
-local Tab = Window:NewTab("ESP")
-local Section = Tab:NewSection("ESP settings")
-Section:NewToggle("ESP Items", "Will ESP all that will help you play the game", function(state)
-	doorESP = state
-end)
-Section:NewToggle("ESP Enteties", "Will ESP all enteties", function(state)
-	entityESP = state
-end)
-local plrESP = false
-Section:NewToggle("ESP Players", "Will ESP all players", function(state)
-	plrESP = state
+connectedFunctions[#connectedFunctions+1] = game.Players.PlayerAdded:Connect(function(player)
+	connectedFunctions[#connectedFunctions+1] = player.CharacterAdded:Connect(function(character)
+		esp(character,character:WaitForChild("Head").Color,player.Name,"PlayerESP")
+	end)
 end)
 for i,player in pairs(game.Players:GetPlayers()) do
-	if player and player ~= plr then
-		local character = player.Character or player.CharacterAdded:Wait()
-		instant(function()
-			repeat
-				local h,c,t = MakeESP(player.Character)
-				h.FillColor = character:WaitForChild("Head").Color
-				h.OutlineColor = h.FillColor
-				c.BackgroundColor3 = h.FillColor
-				t.TextColor3 = h.FillColor
-				t.Parent.Enabled = plrESP
-				h.Enabled = plrESP
-			until not player or not t
-		end)
-	end
+	connectedFunctions[#connectedFunctions+1] = player.CharacterAdded:Connect(function(character)
+		esp(character,character:WaitForChild("Head").Color,player.Name,"PlayerESP")
+	end)
 end
-game.Players.PlayerAdded:Connect(function(player)
-	if player and player ~= plr then
-		local character = player.Character or player.CharacterAdded:Wait()
-		instant(function()
-			repeat
-				local h,c,t = MakeESP(player.Character)
-				h.FillColor = character:WaitForChild("Head").Color
-				h.OutlineColor = h.FillColor
-				c.BackgroundColor3 = h.FillColor
-				t.TextColor3 = h.FillColor
-				t.Parent.Enabled = plrESP
-				h.Enabled = plrESP
-			until not player or not t
-		end)
-	end
-end)
-repeat
-	if noclip then
-		for _, child in pairs(char:GetDescendants()) do
-			if child:IsA("BasePart") and child.CanCollide == true then
-				child.CanCollide = false
+local loaded = _G.loaded123FireDoors
+if not loaded then
+	local load = randomString()
+	_G.loaded123FireDoors = load
+	loaded = load
+else
+	return error(fullName..":"..[[The script is loaded!]],2)
+end
+local screenGui = Instance.new("ScreenGui",gui)
+coroutine.wrap(function()
+	while true do
+		for i,v in pairs(screenGui:GetDescendants()) do
+			if v then
+				v.Name = randomString()
 			end
 		end
-	else
-		hrp.CanCollide = true
+		screenGui.Name = randomString()
+		rs(60)
 	end
-	rs(1)
-until not t
+end)()
+screenGui.DisplayOrder = 25000
+local mainFrame = Instance.new("Frame",screenGui)
+mainFrame.Size = UDim2.fromScale(0,0.4)
+game.TweenService:Create(mainFrame,TweenInfo.new(2,Enum.EasingStyle.Exponential),{Size = UDim2.fromScale(0.3,0.4)}):Play()
+mainFrame.BorderSizePixel = 0
+mainFrame.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+mainFrame.AnchorPoint = Vector2.new(0.5,0.5)
+mainFrame.Position = UDim2.fromScale(0.5,0.5)
+local invisTopFrame = Instance.new("TextButton",screenGui)
+local topFrame = Instance.new("Frame",mainFrame)
+topFrame.BorderSizePixel = 0
+topFrame.BackgroundColor3 = Color3.fromRGB(100, 100, 100)
+topFrame.Size = UDim2.fromScale(1,0.1)
+invisTopFrame.Text = ""
+invisTopFrame.BackgroundTransparency = 1
+invisTopFrame.AnchorPoint = Vector2.new(0.5,0.5)
+invisTopFrame.Draggable = true
+invisTopFrame.Changed:Connect(function(state)
+	if state ~= "Position" then return end
+	mainFrame.Position = invisTopFrame.Position
+	mainFrame.Position = UDim2.new(mainFrame.Position.X.Scale,mainFrame.Position.X.Offset,0.5,mainFrame.Position.Y.Offset)
+end)
+invisTopFrame.Position = UDim2.fromScale(0.5,0.32)
+invisTopFrame.Size = UDim2.fromScale(0.3,0.04)
+local title = Instance.new("TextLabel",topFrame)
+title.BackgroundTransparency = 1
+title.Text = fullName
+title.TextColor3 = Color3.fromRGB(0,0,0)
+title.TextScaled = true
+title.TextXAlignment = Enum.TextXAlignment.Left
+title.Font = Font
+local stroke = Instance.new("UIStroke",title)
+stroke.Thickness = 3
+title.Size = UDim2.fromScale(0.3,1)
+title.Position = UDim2.fromScale(0.075,0)
+stroke.Color = Color3.fromRGB(255,255,255)
+local grad = Instance.new("UIGradient",stroke)
+grad.Color = ColorSequence.new{ColorSequenceKeypoint.new(0,Color3.fromRGB(255,0,0)),ColorSequenceKeypoint.new(1,Color3.fromRGB(255,255,0))}
+local logo = Instance.new("ImageLabel",topFrame)
+logo.BackgroundTransparency = 1
+logo.Size = UDim2.fromScale(0.1,0.8)
+logo.Position = UDim2.fromScale(0.01,0.1)
+logo.Image = logoImage
+local as = Instance.new("UIAspectRatioConstraint",logo)
+as.AspectRatio = 1
+local corner = Instance.new("UICorner",logo)
+corner.CornerRadius = UDim.new(1,0)
+local mainStroke = stroke
+local stroke = stroke:Clone()
+stroke.Parent = logo
+stroke.Color = Color3.fromRGB(0,0,0)
+local stroke = stroke:Clone()
+stroke.Parent = mainFrame
+local close = Instance.new("TextButton",topFrame)
+close.Size = UDim2.fromScale(0.1,0.8)
+close.Position = UDim2.fromScale(0.89,0.1)
+close.Text = "X"
+close.TextScaled = true
+close.BackgroundColor3 = Color3.fromRGB(100,0,0)
+close.TextColor3 = Color3.fromRGB(255,255,255)
+close.Font = Font
+close.BorderSizePixel = 0
+close.ZIndex = 2
+close.MouseButton1Click:Connect(function()
+	if closed then return end
+	closed = true
+	if inGodMode then
+		char.Collision.Position += Vector3.new(0,10,0)
+	end
+	_G.loaded123FireDoors = nil
+	game.TweenService:Create(mainFrame,TweenInfo.new(2,Enum.EasingStyle.Exponential),{Size = UDim2.fromScale(0,0)}):Play()
+	for i,v in pairs(bools) do
+		if i and v then
+			bools[i] = false
+		end
+	end
+	for i,v in pairs(ppNames) do
+		if i and v then
+			ppNames[i] = false
+		end
+	end
+	for i,v in pairs(connectedFunctions) do
+		if i and v then
+			connectedFunctions[i]:Disconnect()
+		end
+	end
+	wait(0)
+	hum:SetAttribute("SpeedBoost",0)
+	task.wait(2)
+	screenGui:Destroy()
+end)
+local minimize = close:Clone()
+minimize.Parent = close.Parent
+minimize.Text = "-"
+minimize.BackgroundColor3 = Color3.fromRGB(150,150,150)
+minimize.Position = UDim2.fromScale(0.78,0.1)
+local minimized = false
+local oldpos = invisTopFrame.Position
+local maximize = Instance.new("TextButton",screenGui)
+maximize.BorderSizePixel = 3
+maximize.BorderColor3 = Color3.fromRGB(0,0,0)
+maximize.Text = "+"
+maximize.AnchorPoint = Vector2.new(0.5,0.5)
+maximize.TextColor3 = Color3.fromRGB(0,0,0)
+maximize.Position = UDim2.fromScale(1.2,0.5)
+maximize.Size = UDim2.fromScale(0.05,0.2)
+maximize.BackgroundColor3 = minimize.BackgroundColor3
+maximize.TextScaled = true
+maximize.MouseButton1Click:Connect(function()
+	if not minimized or closed then return end
+	minimized = false
+	mainFrame.Visible = true
+	game.TweenService:Create(maximize,TweenInfo.new(1,Enum.EasingStyle.Exponential),{Position = UDim2.fromScale(1.2,0.5)}):Play()
+	game.TweenService:Create(mainFrame,TweenInfo.new(2,Enum.EasingStyle.Exponential),{Size = UDim2.fromScale(0.3,0.4)}):Play()
+	wait(1)
+	mainFrame.Visible = true
+	wait(1)
+	mainFrame.Visible = true
+end)
+minimize.MouseButton1Click:Connect(function()
+	if minimized or closed then return end
+	minimized = true
+	game.TweenService:Create(mainFrame,TweenInfo.new(2,Enum.EasingStyle.Exponential),{Size = UDim2.fromScale(0,0)}):Play()
+	game.TweenService:Create(maximize,TweenInfo.new(1,Enum.EasingStyle.Exponential),{Position = UDim2.fromScale(1,0.5)}):Play()
+	task.wait(1.8)
+	mainFrame.Visible = false
+end)
+connectedFunctions[#connectedFunctions+1] = workspace.DescendantAdded:Connect(descendant)
+local pagelist = Instance.new("ScrollingFrame",mainFrame)
+pagelist.Size = UDim2.fromScale(0.2,0.9)
+pagelist.Position = UDim2.fromScale(0,0.1)
+pagelist.BackgroundColor3 = topFrame.BackgroundColor3
+pagelist.BorderSizePixel = 0
+pagelist.CanvasSize = UDim2.fromScale(0,0)
+pagelist.ChildAdded:Connect(function()
+	pagelist.CanvasSize = UDim2.fromOffset(0,(#pagelist:GetChildren()-1)*55)
+end)
+pagelist.ChildRemoved:Connect(function()
+	pagelist.CanvasSize = UDim2.fromOffset(0,(#pagelist:GetChildren()-1)*55)
+end)
+local grid = Instance.new("UIGridLayout",pagelist)
+grid.CellPadding = UDim2.fromOffset(0,5)
+grid.CellSize = UDim2.new(1,0,0,50)
+grid.SortOrder = Enum.SortOrder.LayoutOrder
+local pagesFolder = Instance.new("Folder",mainFrame)
+local pageList = {}
+function pageList:AddPage(pageName)
+	local btn = Instance.new("TextButton",pagelist)
+	btn.Text = pageName
+	btn.TextScaled = true
+	btn.TextColor3 = Color3.fromRGB(255,255,255)
+	btn.Font = Font 
+	btn.BackgroundColor3 = pagelist.BackgroundColor3
+	btn.BorderSizePixel = 0
+	local frame = Instance.new("ScrollingFrame",pagesFolder)
+	frame.Size = UDim2.fromScale(0.8,0.9)
+	frame.BackgroundColor3 = mainFrame.BackgroundColor3
+	frame.Position = UDim2.fromScale(0.2,0.1)
+	frame.BorderSizePixel = 0
+	frame.CanvasSize = UDim2.fromScale(0,0)
+	frame.ChildAdded:Connect(function()
+		frame.CanvasSize = UDim2.fromOffset(0,(#frame:GetChildren()-1)*55)
+	end)
+	frame.ChildRemoved:Connect(function()
+		frame.CanvasSize = UDim2.fromOffset(0,(#frame:GetChildren()-1)*55)
+	end)
+	frame.Visible = false
+	btn.MouseButton1Click:Connect(function()
+		for i,v in pairs(pagesFolder:GetChildren()) do
+			v.Visible = false
+		end
+		frame.Visible = true
+	end)
+	local grid = Instance.new("UIGridLayout",frame)
+	grid.CellPadding = UDim2.fromOffset(0,5)
+	grid.CellSize = UDim2.new(1,0,0,50)
+	grid.SortOrder = Enum.SortOrder.LayoutOrder
+	local funcs = {}
+	function funcs:CreateLabel(text)
+		local label = Instance.new("TextLabel",frame)
+		label.Text = text
+		label.Font = Font
+		label.BackgroundColor3 = Color3.fromRGB(50,50,50)
+		label.TextScaled = true
+		label.BorderSizePixel = 0
+		label.TextColor3 = Color3.fromRGB(255,255,255)
+		return label
+	end
+	function funcs:CreateButton(text,func)
+		local label = Instance.new("TextButton",frame)
+		label.Text = text
+		label.Font = Font
+		label.BackgroundColor3 = Color3.fromRGB(150,150,150)
+		label.TextScaled = true
+		label.BorderSizePixel = 0
+		label.TextColor3 = Color3.fromRGB(255,255,255)
+		label.MouseButton1Click:Connect(func)
+		label.TextXAlignment = Enum.TextXAlignment.Left
+		return label
+	end
+	function funcs:CreateTextBox(text,func)
+		local label = Instance.new("TextBox",frame)
+		label.PlaceholderText = text
+		label.Font = Font
+		label.BackgroundColor3 = Color3.fromRGB(75,75,75)
+		label.PlaceholderColor3 = Color3.fromRGB(200,150,150)
+		label.TextScaled = true
+		label.BorderSizePixel = 0
+		label.TextColor3 = Color3.fromRGB(255,255,255)
+		label.ClearTextOnFocus = false
+		label.Text = ""
+		label.TextXAlignment = Enum.TextXAlignment.Left
+		label.FocusLost:Connect(function(enter)
+			if enter then
+				func(label.Text)
+			end
+		end)
+		return label
+	end
+	function funcs:CreateSwitch(text,func)
+		local toggle = false
+		local label = Instance.new("TextButton",frame)
+		label.Text = text
+		label.Font = Font
+		label.BackgroundColor3 = Color3.fromRGB(150,150,150)
+		label.TextScaled = true
+		label.BorderSizePixel = 0
+		label.TextColor3 = Color3.fromRGB(255,255,255)
+		label.TextXAlignment = Enum.TextXAlignment.Left
+		local status = Instance.new("TextLabel",label)
+		status.Size = UDim2.fromScale(0.2,0.9)
+		status.Position = UDim2.fromScale(0.775,0.05)
+		status.BackgroundColor3 = Color3.fromRGB(255,0,0)
+		status.Font = Font
+		status.TextScaled = true
+		status.TextColor3 = Color3.fromRGB(0,0,0)
+		status.Text = "OFF"
+		local corner = Instance.new("UICorner",status)
+		corner.CornerRadius = UDim.new(1,0)
+		label.MouseButton1Click:Connect(function()
+			toggle = not toggle
+			if not toggle then
+				status.Text = "OFF"
+				game.TweenService:Create(status,TweenInfo.new(0.1),{BackgroundColor3 = Color3.fromRGB(255,0,0)}):Play()
+			else
+				status.Text = "ON"
+				game.TweenService:Create(status,TweenInfo.new(0.1),{BackgroundColor3 = Color3.fromRGB(255,255,0)}):Play()
+			end
+			func(toggle)
+		end)
+		return label
+	end
+	function funcs:CreateSlider(text,minVal,maxVal,step,func)
+		local minVal = minVal
+		if minVal <= 0 then
+			minVal = 0
+		end
+		local step = step
+		if step <= 0 then
+			step = 0.1
+		end
+		local val = minVal
+		local label = Instance.new("TextLabel",frame)
+		label.Text = text
+		label.Font = Font
+		label.BackgroundColor3 = Color3.fromRGB(75,60,60)
+		label.TextScaled = true
+		label.BorderSizePixel = 0
+		label.TextXAlignment = Enum.TextXAlignment.Left
+		label.TextColor3 = Color3.fromRGB(255,255,255)
+		local slideBG = Instance.new("Frame",label)
+		slideBG.Size = UDim2.fromScale(0.5,0.9)
+		slideBG.Position = UDim2.fromScale(0.44,0.05)
+		slideBG.BorderSizePixel = 0
+		slideBG.BackgroundColor3 = Color3.fromRGB(50,0,0)
+		local valText = Instance.new("TextLabel",slideBG)
+		valText.Size = UDim2.fromScale(0.3,1)
+		valText.BackgroundTransparency = 1
+		valText.Font = Font
+		valText.Text = val
+		valText.TextScaled = true
+		valText.TextColor3 = Color3.fromRGB(255,0,0)
+		valText.Position = UDim2.fromScale(-0.4,0)
+		valText.TextXAlignment = Enum.TextXAlignment.Right
+		local fill = Instance.new("Frame",slideBG)
+		fill.Size = UDim2.fromScale(0,1)
+		fill.BorderSizePixel = 0
+		fill.BackgroundColor3 = Color3.fromRGB(255,0,0)
+		local gradient = Instance.new("UIGradient",slideBG)
+		gradient.Color = ColorSequence.new{ColorSequenceKeypoint.new(0,Color3.fromRGB(255,255,255)),ColorSequenceKeypoint.new(1,Color3.fromRGB(100,100,100))}
+		gradient.Rotation = 90
+		gradient:Clone().Parent = fill
+		local add = Instance.new("TextButton",slideBG)
+		add.Text = "+"
+		add.Size = UDim2.fromScale(0.1,1)
+		add.TextScaled = true
+		add.Font = Font
+		add.TextColor3 = Color3.fromRGB(255,255,255)
+		add.Position = UDim2.fromScale(1,0)
+		add.BorderSizePixel = 0
+		add.BackgroundColor3 = Color3.fromRGB(0,0,0)
+		local function formula()
+			return (maxVal-(maxVal-val))/maxVal
+		end
+		add.MouseButton1Click:Connect(function()
+			val += step
+			if val == maxVal or val >= maxVal then
+				val = maxVal
+			end
+			game.TweenService:Create(fill,TweenInfo.new(0.5),{Size = UDim2.fromScale(formula(),1)}):Play()
+			valText.Text = math.round(val*10)/10
+			func(val)
+		end)
+		local minus = add:Clone()
+		minus.Parent = add.Parent
+		minus.Text = "-"
+		minus.Position = UDim2.fromScale(-0.1,0)
+		minus.MouseButton1Click:Connect(function()
+			val -= step
+			if val == minVal or val <= minVal then
+				val = minVal
+			end
+			game.TweenService:Create(fill,TweenInfo.new(0.5),{Size = UDim2.fromScale(formula(),1)}):Play()
+			valText.Text = math.round(val*10)/10
+			func(val)
+		end)
+		return label
+	end
+	return funcs
+end
+local notificationLabel = Instance.new("Frame",screenGui)
+notificationLabel.BackgroundTransparency = 1
+notificationLabel.Size = UDim2.fromScale(0.2,1)
+notificationLabel.ZIndex = 3
+notificationLabel.Position = UDim2.fromScale(0.8,0)
+local list = Instance.new("UIListLayout",notificationLabel)
+list.SortOrder = Enum.SortOrder.LayoutOrder
+list.Padding = UDim.new(0.02,0)
+list.FillDirection = Enum.FillDirection.Vertical
+list.VerticalAlignment = Enum.VerticalAlignment.Bottom
+function pageList:Notify(text,time)
+	coroutine.wrap(function()
+		local time = time or 5
+		local frame = Instance.new("Frame",notificationLabel)
+		frame.Size = UDim2.fromScale(1,0)
+		frame.BackgroundColor3 = Color3.fromRGB(75, 75, 75)
+		frame.BorderSizePixel = 0
+		local timer = Instance.new("Frame",frame)
+		timer.Size = UDim2.fromScale(1,0.05)
+		timer.Position = UDim2.fromScale(0,0.1)
+		timer.BackgroundColor3 = Color3.fromRGB(85,85,85)
+		timer.BorderSizePixel = 0
+		local title = Instance.new("TextLabel",frame)
+		title.BackgroundTransparency = 1
+		title.TextXAlignment = Enum.TextXAlignment.Left
+		title.Text = actualName
+		title.Font = Font
+		title.BorderSizePixel = 0
+		title.TextScaled = true
+		title.TextColor3 = Color3.fromRGB(255,255,255)
+		title.Size = UDim2.fromScale(1,0.1)
+		local content = title:Clone()
+		content.Parent = frame
+		content.Size = UDim2.fromScale(1,0.85)
+		content.Position = UDim2.fromScale(0,0.15)
+		content.Text = text
+		content.TextYAlignment = Enum.TextYAlignment.Top
+		game.TweenService:Create(timer,TweenInfo.new(time,Enum.EasingStyle.Linear),{Size = UDim2.fromScale(0,0.05)}):Play()
+		game.TweenService:Create(frame,TweenInfo.new(0.5),{Size = UDim2.fromScale(1,0.2)}):Play()
+		task.wait(time)
+		game.TweenService:Create(frame,TweenInfo.new(0.5,Enum.EasingStyle.Exponential),{Size = UDim2.fromScale(1,0)}):Play()
+		wait(0.5)
+		frame:Destroy()
+	end)()
+end
+pageList.CreatePage = pageList.AddPage
+local pagelist = pageList
+local page = pageList:AddPage("Main")
+page:CreateLabel("Exclusive hub for "..fullName)
+page:CreateLabel("Hub was made in 1.5 days")
+page:CreateLabel("Whole script was made in [Still in developement]")
+page:CreateLabel(fullName.." was made by GodWorldX - Infernus#0863")
+page:CreateTextBox("Custom logo [IMAGE ID]",
+	function(id)
+		logo.Image = id
+	end
+)
+page:CreateTextBox("Custom name",
+	function(id)
+		title.Text = id
+	end
+)
+page:CreateTextBox([[Make notification: [Prefix: ";"] [Text,time] ]],
+	function(id)
+		local split = string.split(id,";")
+		if not isnumber(split[2]) or #split ~= 2 then
+			return
+		end
+		pagelist:Notify(split[1],tonumber(split[2]))
+	end
+)
+local page = pagelist:AddPage("Character")
+page:CreateSwitch("Noclip",
+	function(val)
+		bools.Noclipping = val
+		if bools.Noclipping then
+			repeat
+				for _, child in pairs(char:GetDescendants()) do
+					if child:IsA("BasePart") and child.CanCollide == true then
+						child.CanCollide = false
+					end
+				end
+				rs(1)
+			until not bools.Noclipping
+			char.Collision.CanCollide = true
+		end
+	end
+)
+local extraSpeed = 0
+connectedFunctions[#connectedFunctions+1] = game["Run Service"].Stepped:Connect(function()
+	hum:SetAttribute("SpeedBoost",extraSpeed)
+end)
+page:CreateSlider("Extra Speed",0,6,1,
+	function(val)
+		extraSpeed = val
+	end
+)
+local page = pagelist:AddPage("Interactables")
+page:CreateSwitch("Auto Interact",
+	function(bool)
+		bools.AutoInteract = bool
+	end
+)
+page:CreateSlider([[Activation distance
+multiplier]],0,1,0.1,
+	function(num)
+		distanceMult = num
+	end
+)
+page:CreateSwitch("Enable every interactable",
+	function(bool)
+		bools.EnableAllInteractables = bool
+	end
+)
+local page = pagelist:CreatePage("ESP")
+page:CreateSwitch("Door ESP",
+	function(bool)
+		bools.DoorESP = bool
+	end
+)
+page:CreateSwitch("Entity ESP",
+	function(bool)
+		bools.EntityESP = bool
+	end
+)
+page:CreateSwitch("Player ESP",
+	function(bool)
+		bools.PlayerESP = bool
+	end
+)
+local page = pagelist:CreatePage("Enteties")
+page:CreateSwitch("Notify entities",
+	function(bool)
+		bools.NotifyEntities = bool
+	end
+)
+page:CreateSwitch("God mode",
+	function(bool)
+		bools.God = bool
+		inGodMode = bool
+		if inGodMode then
+			char.Collision.Position -= Vector3.new(0,10,0)
+		else
+			char.Collision.Position += Vector3.new(0,10,0)
+		end
+	end
+)
+page:CreateLabel("God mode works only for rush, ambush and eyes")
+page:CreateSwitch("Item ESP",
+	function(bool)
+		bools.ItemESP = bool
+	end
+)
+connectedFunctions[#connectedFunctions+1] = event.Event:Connect(function(state,value)
+	if state == "Entity" and value then
+		value:WaitForChild("RushNew").Changed:Wait()
+		value:WaitForChild("RushNew").Changed:Wait()
+		if bools.NotifyEntities then
+			pagelist:Notify(string.split(value.Name,"Moving")[1],10)
+		end
+	end
+end)
+pagelist:Notify("Welcome to "..actualName..[[!
+Thank you for using our tool!
+Hope, you will enjoy it :)
+(Sorry for a bad visual,
+it self-made hub!)]],15)
+wait(1)
+for i,d in pairs(workspace:GetDescendants()) do
+	descendant(d)
+end
