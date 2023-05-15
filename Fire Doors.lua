@@ -170,11 +170,29 @@ local function esp(target,color,text,boolName)
 			end)()
 			return esp,frame,txt
 		elseif target and target.Parent and espDetected and fldr then
-			return fldr:FindFirstChildOfClass("Highlight"),fldr:FindFirstChildOfClass("BillboardGui"):FindFirstChildOfClass("Frame"),fldr:FindFirstChildOfClass("BillboardGui"):FindFirstChildOfClass("TextLabel")
+			local esp =  fldr:FindFirstChildOfClass("Highlight")
+			local bg = fldr:FindFirstChildOfClass("BillboardGui")
+			local frame = fldr:FindFirstChildOfClass("BillboardGui"):FindFirstChildOfClass("Frame")
+			local txt = fldr:FindFirstChildOfClass("BillboardGui"):FindFirstChildOfClass("TextLabel")
+			coroutine.wrap(function()
+				repeat
+					if target and target.Parent then
+						if bools[boolName] == true then
+							esp.Enabled = bools[boolName]
+							bg.Enabled = esp.Enabled
+						else
+							esp.Enabled = false
+							bg.Enabled = esp.Enabled
+						end
+					end
+					rs(1)
+				until not target
+			end)()
+			return esp,frame,txt
 		end
 	end
 	if not target:IsA("Instance") then return end
-	esp(target)
+	return esp(target)
 end
 function descendant(d)
 	coroutine.wrap(function()
