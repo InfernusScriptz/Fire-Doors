@@ -24,6 +24,7 @@ local bools = {
 	["ItemESP"] = false,
 	["InstantInteract"] = false,
 	["NoSeek"] = false,
+	["NoScreech"] = false,
 	["NoSeekArmsAndChandelierObstructions"] = false,
 }
 local Font = Enum.Font.Oswald
@@ -328,6 +329,13 @@ coroutine.wrap(function()
 		rs(60)
 	end
 end)()
+connectedFunctions[#connectedFunctions+1] = workspace.CurrentCamera.ChildAdded:Connect(function(child)
+	if child then
+		if child.Name == "Screech" and bools.NoScreech then
+			child:Destroy()
+		end
+	end
+end)
 screenGui.DisplayOrder = 25000
 local mainFrame = Instance.new("Frame",screenGui)
 mainFrame.Size = UDim2.fromScale(0,0.4)
@@ -823,6 +831,11 @@ page:CreateSwitch("Notify entities",
 	end
 )
 page:CreateSwitch("No seek",
+	function(bool)
+		bools.NoSeek = bool
+	end
+)
+page:CreateSwitch("No screech",
 	function(bool)
 		bools.NoSeek = bool
 	end
