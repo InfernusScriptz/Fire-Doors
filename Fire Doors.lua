@@ -207,6 +207,9 @@ function descendant(d)
 			if d:IsA("ProximityPrompt") and ppNames[d.Name] then
 				repeat
 					if not d then return end
+					if d.Name == "EnterPrompt" and bools.EnableAllInteractables then
+						d.Enabled = true
+					end
 					d.MaxActivationDistance = 6*(distanceMult+1)
 					if bools.AutoInteract and getDistance(d.Parent,hrp) and getDistance(d.Parent,hrp) <= d.MaxActivationDistance and d.Enabled and d.ActionText ~= "Close" and d.ObjectText ~= "Close" then
 						fireproximityprompt(d,1,true)
