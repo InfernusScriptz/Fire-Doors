@@ -224,19 +224,14 @@ function descendant(d)
 				until not d or closed
 			end
 			if d:IsA("Model") then
-				coroutine.wrap(function()
-					repeat
-						if d.Name == "TriggerEventCollision" and bools.NoSeek then
-							d:Destroy()
-						end
-						if d.Name == "Seek_Arm" or d.Name == "ChandelierObstruction" then
-							if bools.NoSeekArmsAndChandelierObstructions then
-								d:Destroy()
-							end
-						end
-						rs(60)
-					until not d or closed
-				end)()
+				if d.Name == "TriggerEventCollision" and bools.NoSeek then
+					d:Destroy()
+				end
+				if d.Name == "Seek_Arm" or d.Name == "ChandelierObstruction" then
+					if bools.NoSeekArmsAndChandelierObstructions then
+						d:Destroy()
+					end
+				end
 				if d.Name == "KeyObtain" then
 					esp(d,Color3.fromRGB(0,150,0),"Key","ItemESP")
 				end
@@ -873,12 +868,6 @@ page:CreateButton("Bypass anticheat",
 )
 page:CreateLabel("!Bypass anticheat works only in starting elevator at item shop menu!")
 local page = pagelist:CreatePage("Other")
-page:CreateButton("Teleport to map",
-	function()
-		local room = workspace.CurrentRooms[#workspace.CurrentRooms:GetChildren()-1]
-		hrp.CFrame = room.Door.Door.CFrame
-	end
-)
 page:CreateButton("Reset",
 	function()
 		hum.Health = -1
