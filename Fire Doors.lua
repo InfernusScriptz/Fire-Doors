@@ -1,5 +1,5 @@
-local actualName = "Fire Doors"
-local version = "2.0.3"
+local actualName = "Fire~Doors"
+local version = "2.0.4"
 local fullName = actualName.." ["..version.."]"
 local ppNames = {
 	["ModulePrompt"] = true,
@@ -23,12 +23,14 @@ local bools = {
 	["God"] = false,
 	["ItemESP"] = false,
 	["InstantInteract"] = false,
+	["NoSeek"] = false,
+	["NoSeekArmsAndChandelierObstructions"] = false,
 }
 local Font = Enum.Font.Oswald
 local logoImage = "http://www.roblox.com/asset/?id=876744268"
 local plr = game.Players.LocalPlayer
 local char = plr.Character or plr.CharacterAdded:Wait()
-local gui = plr.PlayerGui or plr:WaitForChild("PlayerGui") or game.CoreGui
+local gui = game.CoreGui
 local bp = plr.Backpack or plr:WaitForChild("Backpack")
 local hrp = char:FindFirstChild("HumanoidRootPart") or char:FindFirstChild("Collision") or char:FindFirstChildOfClass("BasePart")
 local hum = char:WaitForChild("Humanoid")
@@ -168,7 +170,7 @@ local function esp(target,color,text,boolName)
 						end
 					end
 					rs(1)
-				until not target
+				until not target or closed
 			end)()
 			return esp,frame,txt
 		elseif target and target.Parent and espDetected and fldr then
@@ -188,7 +190,7 @@ local function esp(target,color,text,boolName)
 						end
 					end
 					rs(1)
-				until not target
+				until not target or closed
 			end)()
 			return esp,frame,txt
 		end
@@ -222,6 +224,19 @@ function descendant(d)
 				until not d or closed
 			end
 			if d:IsA("Model") then
+				coroutine.wrap(function()
+					repeat
+						if d.Name == "TriggerEventCollision" and bools.NoSeek then
+							d:Destroy()
+						end
+						if d.Name == "Seek_Arm" or d.Name == "ChandelierObstruction" then
+							if bools.NoSeekArmsAndChandelierObstructions then
+								d:Destroy()
+							end
+						end
+						rs(1)
+					until not d or closed
+				end)()
 				if d.Name == "KeyObtain" then
 					esp(d,Color3.fromRGB(0,150,0),"Key","ItemESP")
 				end
@@ -727,7 +742,7 @@ page:CreateSwitch("Noclip",
 					end
 				end
 				rs(1)
-			until not bools.Noclipping
+			until not bools.Noclipping or closed
 			char.Collision.CanCollide = true
 		end
 	end
@@ -803,6 +818,17 @@ page:CreateSwitch("Notify entities",
 		bools.NotifyEntities = bool
 	end
 )
+page:CreateSwitch("No seek",
+	function(bool)
+		bools.NoSeek = bool
+	end
+)
+page:CreateSwitch([[No seek arms and chandelier
+obstructions]],
+	function(bool)
+		bools.NoSeekArmsAndChandelierObstructions = bool
+	end
+)
 page:CreateSwitch("God mode",
 	function(bool)
 		bools.God = bool
@@ -846,6 +872,18 @@ page:CreateButton("Bypass anticheat",
 	end
 )
 page:CreateLabel("!Bypass anticheat works only in starting elevator at item shop menu!")
+local page = pagelist:CreatePage("Other")
+page:CreateButton("Teleport to map",
+	function()
+		local room = workspace.CurrentRooms[#workspace.CurrentRooms:GetChildren()-1]
+		hrp.CFrame = room.Door.Door.CFrame
+	end
+)
+page:CreateButton("Reset",
+	function()
+		hum.Health = -1
+	end
+)
 for i,d in pairs(workspace:GetDescendants()) do
 	descendant(d)
 end
