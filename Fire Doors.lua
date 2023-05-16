@@ -8,6 +8,7 @@ local ppNames = {
 	["SkipPrompt"] = true,
 	["HerbPrompt"] = true,
 	["AwesomePrompt"] = true,
+	["UnlockPrompt"] = true,
 }
 local connectedFunctions = {}
 local bools = {
