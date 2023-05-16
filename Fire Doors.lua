@@ -202,9 +202,6 @@ function descendant(d)
 	coroutine.wrap(function()
 		if d then
 			if d:IsA("BasePart") then
-				if d.Transparency == 0 then
-					d.Transparency = 0.01
-				end
 				d.CanQuery = false
 			end
 			if d:IsA("ProximityPrompt") and ppNames[d.Name] then
