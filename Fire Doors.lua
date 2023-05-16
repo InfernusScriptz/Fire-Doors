@@ -1,5 +1,5 @@
 local actualName = "Fire Doors"
-local version = "2.0.2"
+local version = "2.0.3"
 local fullName = actualName.." ["..version.."]"
 local ppNames = {
 	["ModulePrompt"] = true,
@@ -732,6 +732,7 @@ page:CreateSwitch("Noclip",
 		end
 	end
 )
+local bypassedAC = _G.BAC123FireDoors
 local extraSpeed = 0
 connectedFunctions[#connectedFunctions+1] = game["Run Service"].Stepped:Connect(function()
 	hum:SetAttribute("SpeedBoost",extraSpeed)
@@ -823,6 +824,20 @@ Thank you for using our tool!
 Hope, you will enjoy it :)
 (Sorry for a bad visual,
 it self-made hub!)]],15)
+local page = pagelist:CreatePage("Anticheat")
+page:CreateLabel("In previos page we have god-mode function. It also bypassing anti-noclip")
+page:CreateButton("Bypass anticheat",
+	function()
+		if not bypassedAC then
+			game:GetService("Players").LocalPlayer.PlayerGui.MainUI.ItemShop:Destroy()
+			require(game:GetService("Players").LocalPlayer.PlayerGui.MainUI.Initiator.Main_Game).freemouse = false
+			game:GetService("ReplicatedStorage").ClientModules.EntityModules.Void:Destroy()
+			_G.BAC123FireDoors = true
+			bypassedAC = _G.BAC123FireDoors
+		end
+	end
+)
+page:CreateLabel("!Bypass anticheat works only in starting elevator at item shop menu!")
 for i,d in pairs(workspace:GetDescendants()) do
 	descendant(d)
 end
