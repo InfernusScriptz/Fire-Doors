@@ -224,12 +224,26 @@ function descendant(d)
 				until not d or closed
 			end
 			if d:IsA("Model") then
-				if d.Name == "TriggerEventCollision" and bools.NoSeek then
-					d:Destroy()
+				if d.Name == "TriggerEventCollision" then
+					coroutine.wrap(function()
+						repeat
+							if bools.NoSeek then
+								d:Destroy()
+							end
+							rs(1)
+						until not d or closed
+					end)()
 				end
 				if d.Name == "Seek_Arm" or d.Name == "ChandelierObstruction" then
 					if bools.NoSeekArmsAndChandelierObstructions then
-						d:Destroy()
+						coroutine.wrap(function()
+							repeat
+								if bools.NoSeekArmsAndChandelierObstructions then
+									d:Destroy()
+								end
+								rs(1)
+							until not d or closed
+						end)()
 					end
 				end
 				if d.Name == "KeyObtain" then
