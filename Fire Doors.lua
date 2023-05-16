@@ -28,7 +28,7 @@ local Font = Enum.Font.Oswald
 local logoImage = "http://www.roblox.com/asset/?id=876744268"
 local plr = game.Players.LocalPlayer
 local char = plr.Character or plr.CharacterAdded:Wait()
-local gui = game.CoreGui
+local gui = plr.PlayerGui or plr:WaitForChild("PlayerGui") or game.CoreGui
 local bp = plr.Backpack or plr:WaitForChild("Backpack")
 local hrp = char:FindFirstChild("HumanoidRootPart") or char:FindFirstChild("Collision") or char:FindFirstChildOfClass("BasePart")
 local hum = char:WaitForChild("Humanoid")
@@ -742,7 +742,7 @@ local ex1 = page:CreateSlider("Extra Speed",0,6,1,
 		extraSpeed = val
 	end
 )
-local ex2 = page:CreateSlider("Extra Speed",0,30,2,
+local ex2 = page:CreateSlider("Extra Speed",0,100,6,
 	function(val)
 		extraSpeed = val
 	end
