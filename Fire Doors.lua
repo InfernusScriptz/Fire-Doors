@@ -737,11 +737,17 @@ local extraSpeed = 0
 connectedFunctions[#connectedFunctions+1] = game["Run Service"].Stepped:Connect(function()
 	hum:SetAttribute("SpeedBoost",extraSpeed)
 end)
-page:CreateSlider("Extra Speed",0,6,1,
+local ex1 = page:CreateSlider("Extra Speed",0,6,1,
 	function(val)
 		extraSpeed = val
 	end
 )
+local ex2 = page:CreateSlider("Extra Speed",0,30,2,
+	function(val)
+		extraSpeed = val
+	end
+)
+ex2.Visible = false
 local page = pagelist:AddPage("Interactables")
 page:CreateSwitch("Auto Interact",
 	function(bool)
@@ -834,6 +840,8 @@ page:CreateButton("Bypass anticheat",
 			game:GetService("ReplicatedStorage").ClientModules.EntityModules.Void:Destroy()
 			_G.BAC123FireDoors = true
 			bypassedAC = _G.BAC123FireDoors
+			ex1.Visible = false
+			ex2.Visible = true
 		end
 	end
 )
