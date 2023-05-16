@@ -222,6 +222,12 @@ function descendant(d)
 				if d.Name == "KeyObtain" then
 					esp(d,Color3.fromRGB(0,150,0),"Key","ItemESP")
 				end
+				if d.Name == "LiveHintBook" then
+					esp(d,Color3.fromRGB(0,150,150),"Hint","ItemESP")
+				end
+				if d.Name == "LiveBreakerPolePickup" then
+					esp(d,Color3.fromRGB(150,50,0),"Breaker","ItemESP")
+				end
 				if d.Parent == workspace and string.match(d.Name,"Moving") then
 					event:Fire("Entity",d)
 				end
@@ -768,6 +774,11 @@ page:CreateSwitch("Player ESP",
 		bools.PlayerESP = bool
 	end
 )
+page:CreateSwitch("Item ESP",
+	function(bool)
+		bools.ItemESP = bool
+	end
+)
 local page = pagelist:CreatePage("Enteties")
 page:CreateSwitch("Notify entities",
 	function(bool)
@@ -786,11 +797,6 @@ page:CreateSwitch("God mode",
 	end
 )
 page:CreateLabel("God mode works only for rush, ambush and eyes")
-page:CreateSwitch("Item ESP",
-	function(bool)
-		bools.ItemESP = bool
-	end
-)
 connectedFunctions[#connectedFunctions+1] = event.Event:Connect(function(state,value)
 	if state == "Entity" and value then
 		value:WaitForChild("RushNew").Changed:Wait()
