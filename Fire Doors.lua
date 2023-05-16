@@ -21,6 +21,7 @@ local bools = {
 	["NotifyEntities"] = false,
 	["God"] = false,
 	["ItemESP"] = false,
+	["InstantInteract"] = false,
 }
 local Font = Enum.Font.Oswald
 local logoImage = "http://www.roblox.com/asset/?id=876744268"
@@ -214,13 +215,13 @@ function descendant(d)
 					if d.ActionText == "Close" or d.ObjectText == "Close" then
 						d.Enabled = not bools.AutoInteract
 					end
-					if d.Name == "ModulePrompt" and d.Parent:FindFirstChild("Hitbox") and d.Parent:IsA("Model") or d.Name == "ActivateEventPropmt" and d.Parent:FindFirstChild("Base") and d.Parent:IsA("Model") then
-						esp(d.Parent,Color3.fromRGB(0,150,0),string.split(d.Parent.Name,"Obtain")[1],"ItemESP")
-					end
 					rs(1)
 				until not d or closed
 			end
 			if d:IsA("Model") then
+				if d.Name == "KeyObtain" then
+					esp(d,Color3.fromRGB(0,150,0),"Key","ItemESP")
+				end
 				if d.Parent == workspace and string.match(d.Name,"Moving") then
 					event:Fire("Entity",d)
 				end
@@ -643,6 +644,11 @@ function pageList:Notify(text,time)
 		timer.Position = UDim2.fromScale(0,0.1)
 		timer.BackgroundColor3 = Color3.fromRGB(85,85,85)
 		timer.BorderSizePixel = 0
+		timer.ZIndex += 1
+		local fframe = timer:Clone()
+		fframe.Parent = timer.Parent
+		fframe.BackgroundColor3 = Color3.fromRGB(50,50,50)
+		fframe.ZIndex -= 1
 		local title = Instance.new("TextLabel",frame)
 		title.BackgroundTransparency = 1
 		title.TextXAlignment = Enum.TextXAlignment.Left
@@ -735,6 +741,17 @@ page:CreateSwitch("Enable every interactable",
 		bools.EnableAllInteractables = bool
 	end
 )
+page:CreateSwitch("Instant Interact",
+	function(bool)
+		bools.InstantInteract = bool
+	end
+)
+connectedFunctions[#connectedFunctions+1] = game.ProximityPromptService.PromptButtonHoldBegan:Connect(function(pp)
+	if bools.InstantInteract then
+		pp:InputHoldEnd()
+		fireproximityprompt(pp,1,true)
+	end
+end)
 local page = pagelist:CreatePage("ESP")
 page:CreateSwitch("Door ESP",
 	function(bool)
@@ -778,8 +795,9 @@ connectedFunctions[#connectedFunctions+1] = event.Event:Connect(function(state,v
 	if state == "Entity" and value then
 		value:WaitForChild("RushNew").Changed:Wait()
 		value:WaitForChild("RushNew").Changed:Wait()
+		esp(value,Color3.fromRGB(150,0,0),string.split(value.Name,"Moving")[1],"EntityESP")
 		if bools.NotifyEntities then
-			pagelist:Notify(string.split(value.Name,"Moving")[1],10)
+			pagelist:Notify(string.split(value.Name,"Moving")[1].." has spawned!",10)
 		end
 	end
 end)
@@ -788,7 +806,6 @@ Thank you for using our tool!
 Hope, you will enjoy it :)
 (Sorry for a bad visual,
 it self-made hub!)]],15)
-wait(1)
 for i,d in pairs(workspace:GetDescendants()) do
 	descendant(d)
 end
