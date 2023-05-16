@@ -207,9 +207,6 @@ function descendant(d)
 			if d:IsA("ProximityPrompt") and ppNames[d.Name] then
 				repeat
 					if not d then return end
-					if d.Name == "EnterPrompt" and bools.EnableAllInteractables then
-						d.Enabled = true
-					end
 					d.MaxActivationDistance = 6*(distanceMult+1)
 					if bools.AutoInteract and getDistance(d.Parent,hrp) and getDistance(d.Parent,hrp) <= d.MaxActivationDistance and d.Enabled and d.ActionText ~= "Close" and d.ObjectText ~= "Close" then
 						fireproximityprompt(d,1,true)
@@ -235,16 +232,14 @@ function descendant(d)
 					end)()
 				end
 				if d.Name == "Seek_Arm" or d.Name == "ChandelierObstruction" then
-					if bools.NoSeekArmsAndChandelierObstructions then
-						coroutine.wrap(function()
-							repeat
-								if bools.NoSeekArmsAndChandelierObstructions then
-									d:Destroy()
-								end
-								rs(1)
-							until not d or closed
-						end)()
-					end
+					coroutine.wrap(function()
+						repeat
+							if bools.NoSeekArmsAndChandelierObstructions then
+								d:Destroy()
+							end
+							rs(1)
+						until not d or closed
+					end)()
 				end
 				if d.Name == "KeyObtain" then
 					esp(d,Color3.fromRGB(0,150,0),"Key","ItemESP")
