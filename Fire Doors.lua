@@ -279,11 +279,13 @@ connectedFunctions[#connectedFunctions+1] = game.Players.PlayerAdded:Connect(fun
 	end)
 end)
 for i,player in pairs(game.Players:GetPlayers()) do
-	if player.Character then
+	if player.Character and plr ~= player then
 		esp(player.Character,player.Character:WaitForChild("Head").Color,player.Name,"PlayerESP")
 	end
 	connectedFunctions[#connectedFunctions+1] = player.CharacterAdded:Connect(function(character)
-		esp(character,character:WaitForChild("Head").Color,player.Name,"PlayerESP")
+		if player ~= plr then
+			esp(character,character:WaitForChild("Head").Color,player.Name,"PlayerESP")
+		end
 	end)
 end
 local loaded = _G.loaded123FireDoors
