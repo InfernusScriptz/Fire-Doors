@@ -242,6 +242,9 @@ function descendant(d)
 						until not d or closed
 					end)()
 				end
+				if d.Name == "Screech" and bools.NoScreech then
+					d:Destroy()		
+				end
 				if d.Name == "KeyObtain" then
 					esp(d,Color3.fromRGB(0,150,0),"Key","ItemESP")
 				end
