@@ -234,7 +234,7 @@ function descendant(d)
 								d:Destroy()
 							end
 						end
-						rs(1)
+						rs(60)
 					until not d or closed
 				end)()
 				if d.Name == "KeyObtain" then
