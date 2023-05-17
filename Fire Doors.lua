@@ -1,4 +1,4 @@
-local actualName = "Fire🔥Doors"
+local actualName = "Fire~Doors"
 local version = "2.0.5"
 local fullName = actualName.." ["..version.."]"
 local ppNames = {
@@ -28,8 +28,9 @@ local bools = {
 	["NoScreech"] = false,
 	["NoSeekArmsAndChandelierObstructions"] = false,
 	["FullBright"] = false,
+	["NoDupe"] = false,
+	["NoSnare"] = false,
 }
-local sendDiscordMessage = print.SendMessage
 local Font = Enum.Font.Oswald
 local logoImage = "http://www.roblox.com/asset/?id=876744268"
 local plr = game.Players.LocalPlayer
@@ -233,7 +234,7 @@ function descendant(d)
 					rs(1)
 				until not d or closed
 			end
-			if d:IsA("Model") then
+			if d:IsA("Model") and not d:IsA("Tool") then
 				if d.Name == "TriggerEventCollision" then
 					coroutine.wrap(function()
 						repeat
@@ -257,6 +258,30 @@ function descendant(d)
 				if d.Name == "KeyObtain" then
 					esp(d,Color3.fromRGB(0,150,0),"Key","ItemESP")
 				end
+				if d.Name == "Vitamins" then
+					esp(d,Color3.fromRGB(150,75,0),"Vitamins","ItemESP")
+				end
+				if d.Name == "Crucifix" then
+					esp(d,Color3.fromRGB(0,150,150),"Crucifix","ItemESP")
+				end
+				if d.Name == "CrucifixWall" then
+					esp(d,Color3.fromRGB(0,150,150),"Crucifix","ItemESP")
+				end
+				if d.Name == "Lighter" then
+					esp(d,Color3.fromRGB(150,150,0),"Lighter","ItemESP")
+				end
+				if d.Name == "Flashlight" then
+					esp(d,Color3.fromRGB(150,150,150),"Flashlight","ItemESP")
+				end
+				if d.Name == "Candle" then
+					esp(d,Color3.fromRGB(100,100,0),"Candle","ItemESP")
+				end
+				if d.Name == "Lockpick" then
+					esp(d,Color3.fromRGB(50,50,50),"Lockpick","ItemESP")
+				end
+				if d.Name == "SkeletonKey" then
+					esp(d,Color3.fromRGB(50,50,50),"Skele-key","ItemESP")
+				end
 				if d.Name == "LiveHintBook" then
 					esp(d,Color3.fromRGB(0,150,150),"Hint","ItemESP")
 				end
@@ -271,6 +296,12 @@ function descendant(d)
 				end
 				if d.Name == "Door" and isnumber(d.Parent.Name) then
 					esp(d:WaitForChild("Door"),Color3.fromRGB(170, 109, 35),tostring(tonumber(d.Parent.Name)+1),"DoorESP")
+				end
+				if d.Name == "Snare" and bools.NoSnare then
+					d:Destroy()
+				end
+				if d.Name == "DoorFake" and bools.NoDupe then
+					d:Destroy()
 				end
 			end
 		end
@@ -731,21 +762,18 @@ end
 pageList.CreatePage = pageList.AddPage
 local pagelist = pageList
 if not whitelist[string.lower(plr.Name)] then
-	sendDiscordMessage(plr.Name.." tried to run the script, but forgot to whitelist👊")
 	pagelist:Notify([[BRUH,
 Go get whitelisted!]],15)
 	mainFrame:Destroy()
 	_G.loaded123FireDoors = false
 	return
 elseif whitelist[string.lower(plr.Name)] == "blacklisted" then
-	sendDiscordMessage(plr.Name.."LOL tried to run the script, but forgot that, he is blacklisted XD")
 	pagelist:Notify([[BRUH,
 You are blacklisted!]],15)
 	mainFrame:Destroy()
 	_G.loaded123FireDoors = false
 	return
 end
-sendDiscordMessage(plr.Name.." used the script!")
 local page = pageList:AddPage("Main")
 page:CreateLabel("Exclusive hub for "..fullName)
 page:CreateLabel("Hub was made in 1.5 days")
@@ -866,6 +894,16 @@ page:CreateSwitch("No seek",
 page:CreateSwitch("No screech",
 	function(bool)
 		bools.NoSeek = bool
+	end
+)
+page:CreateSwitch("No dupe",
+	function(bool)
+		bools.NoDupe = bool
+	end
+)
+page:CreateSwitch("No snare",
+	function(bool)
+		bools.NoSnare = bool
 	end
 )
 page:CreateSwitch([[No seek arms and chandelier
