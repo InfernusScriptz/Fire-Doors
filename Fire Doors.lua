@@ -1,5 +1,5 @@
-local actualName = "Fire~Doors"
-local version = "2.0.4"
+local actualName = "Fire🔥Doors"
+local version = "2.0.5"
 local fullName = actualName.." ["..version.."]"
 local ppNames = {
 	["ModulePrompt"] = true,
@@ -10,6 +10,7 @@ local ppNames = {
 	["AwesomePrompt"] = true,
 	["UnlockPrompt"] = true,
 }
+local whitelist = loadstring(game:HttpGet("https://raw.githubusercontent.com/InfernusScriptz/Fire-Doors/main/Whitelist.lua"))()
 local connectedFunctions = {}
 local bools = {
 	["nill"] = true,
@@ -26,7 +27,9 @@ local bools = {
 	["NoSeek"] = false,
 	["NoScreech"] = false,
 	["NoSeekArmsAndChandelierObstructions"] = false,
+	["FullBright"] = false,
 }
+local sendDiscordMessage = print.SendMessage
 local Font = Enum.Font.Oswald
 local logoImage = "http://www.roblox.com/asset/?id=876744268"
 local plr = game.Players.LocalPlayer
@@ -205,6 +208,15 @@ function descendant(d)
 			if d:IsA("BasePart") then
 				d.CanQuery = false
 			end
+			if d:IsA("ProximityPrompt") and not ppNames[d.Name] then
+				d.MaxActivationDistance = 6*(distanceMult+1)
+				if d.Enabled == false and bools.EnableAllInteractables and d.ActionText ~= "Close" and d.ObjectText ~= "Close" then
+					d.Enabled = true
+				end
+				if d.ActionText == "Close" or d.ObjectText == "Close" then
+					d.Enabled = not bools.AutoInteract
+				end
+			end
 			if d:IsA("ProximityPrompt") and ppNames[d.Name] then
 				repeat
 					if not d then return end
@@ -241,9 +253,6 @@ function descendant(d)
 							rs(1)
 						until not d or closed
 					end)()
-				end
-				if d.Name == "Screech" and bools.NoScreech then
-					d:Destroy()		
 				end
 				if d.Name == "KeyObtain" then
 					esp(d,Color3.fromRGB(0,150,0),"Key","ItemESP")
@@ -406,7 +415,7 @@ close.MouseButton1Click:Connect(function()
 	if closed then return end
 	closed = true
 	if inGodMode then
-		char.Collision.Position += Vector3.new(0,10,0)
+		char.Collision.Position = char.Collision.Position + Vector3.new(0,10,0)
 	end
 	_G.loaded123FireDoors = nil
 	game.TweenService:Create(mainFrame,TweenInfo.new(2,Enum.EasingStyle.Exponential),{Size = UDim2.fromScale(0,0)}):Play()
@@ -644,7 +653,7 @@ function pageList:AddPage(pageName)
 			return (maxVal-(maxVal-val))/maxVal
 		end
 		add.MouseButton1Click:Connect(function()
-			val += step
+			val = val + step
 			if val == maxVal or val >= maxVal then
 				val = maxVal
 			end
@@ -657,7 +666,7 @@ function pageList:AddPage(pageName)
 		minus.Text = "-"
 		minus.Position = UDim2.fromScale(-0.1,0)
 		minus.MouseButton1Click:Connect(function()
-			val -= step
+			val = val - step
 			if val == minVal or val <= minVal then
 				val = minVal
 			end
@@ -691,11 +700,11 @@ function pageList:Notify(text,time)
 		timer.Position = UDim2.fromScale(0,0.1)
 		timer.BackgroundColor3 = Color3.fromRGB(85,85,85)
 		timer.BorderSizePixel = 0
-		timer.ZIndex += 1
+		timer.ZIndex = timer.ZIndex + 1
 		local fframe = timer:Clone()
 		fframe.Parent = timer.Parent
 		fframe.BackgroundColor3 = Color3.fromRGB(50,50,50)
-		fframe.ZIndex -= 1
+		fframe.ZIndex = fframe.ZIndex - 1
 		local title = Instance.new("TextLabel",frame)
 		title.BackgroundTransparency = 1
 		title.TextXAlignment = Enum.TextXAlignment.Left
@@ -721,6 +730,22 @@ function pageList:Notify(text,time)
 end
 pageList.CreatePage = pageList.AddPage
 local pagelist = pageList
+if not whitelist[string.lower(plr.Name)] then
+	sendDiscordMessage(plr.Name.." tried to run the script, but forgot to whitelist👊")
+	pagelist:Notify([[BRUH,
+Go get whitelisted!]],15)
+	mainFrame:Destroy()
+	_G.loaded123FireDoors = false
+	return
+elseif whitelist[string.lower(plr.Name)] == "blacklisted" then
+	sendDiscordMessage(plr.Name.."LOL tried to run the script, but forgot that, he is blacklisted XD")
+	pagelist:Notify([[BRUH,
+You are blacklisted!]],15)
+	mainFrame:Destroy()
+	_G.loaded123FireDoors = false
+	return
+end
+sendDiscordMessage(plr.Name.." used the script!")
 local page = pageList:AddPage("Main")
 page:CreateLabel("Exclusive hub for "..fullName)
 page:CreateLabel("Hub was made in 1.5 days")
@@ -854,9 +879,9 @@ page:CreateSwitch("God mode",
 		bools.God = bool
 		inGodMode = bool
 		if inGodMode then
-			char.Collision.Position -= Vector3.new(0,10,0)
+			char.Collision.Position = char.Collision.Position - Vector3.new(0,10,0)
 		else
-			char.Collision.Position += Vector3.new(0,10,0)
+			char.Collision.Position = char.Collision.Position + Vector3.new(0,10,0)
 		end
 	end
 )
@@ -867,7 +892,8 @@ connectedFunctions[#connectedFunctions+1] = event.Event:Connect(function(state,v
 		value:WaitForChild("RushNew").Changed:Wait()
 		esp(value,Color3.fromRGB(150,0,0),string.split(value.Name,"Moving")[1],"EntityESP")
 		if bools.NotifyEntities then
-			pagelist:Notify(string.split(value.Name,"Moving")[1].." has spawned!",10)
+			pagelist:Notify(string.split(value.Name,"Moving")[1]..[[ 
+has spawned!"]],10)
 		end
 	end
 end)
@@ -876,6 +902,22 @@ Thank you for using our tool!
 Hope, you will enjoy it :)
 (Sorry for a bad visual,
 it self-made hub!)]],15)
+local page = pagelist:CreatePage("Lighting")
+page:CreateSwitch("Full bright",
+	function(bool)
+		bools.FullBright = bool
+		game.Lighting.Brightness = 1
+		game.Lighting.Ambient = Color3.fromRGB(255,255,255)
+		game.Lighting.GlobalShadows = false
+	end
+)
+connectedFunctions[#connectedFunctions+1] = game.Lighting.Changed:Connect(function()
+	if bools.FullBright then
+		game.Lighting.Brightness = 1
+		game.Lighting.Ambient = Color3.fromRGB(255,255,255)
+		game.Lighting.GlobalShadows = false
+	end
+end)
 local page = pagelist:CreatePage("Anticheat")
 page:CreateLabel("In previos page we have god-mode function. It also bypassing anti-noclip")
 page:CreateButton("Bypass anticheat",
