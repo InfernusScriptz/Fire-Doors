@@ -1,6 +1,9 @@
+local yes = "whitelisted"
+local no = "blacklisted"
 local list = {
-  ["godworldx"] = "whitelisted",
-  ["playpozitiv_youtube"] = "whitelisted",
+  ["godworldx"] = yes,
+  ["playpozitiv_youtube"] = yes,
+  ["melonboied"] = yes,
 }
 
 return list
