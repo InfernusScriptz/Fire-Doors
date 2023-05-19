@@ -145,7 +145,7 @@ local function esp(target,color,text,boolName)
 			txt.BackgroundTransparency = 1
 			txt.Size = UDim2.fromScale(1,0.2)
 			txt.AnchorPoint = Vector2.new(0.5,0.5)
-			txt.Position = UDim2.fromScale(0.5,0.65)wd
+			txt.Position = UDim2.fromScale(0.5,0.65)
 			txt.Font = Font
 			txt.TextScaled = true
 			txt.TextColor3 = color
