@@ -261,6 +261,16 @@ function descendant(d)
 				if d.Name == "Vitamins" then
 					esp(d,Color3.fromRGB(150,75,0),"Vitamins","ItemESP")
 				end
+				if d.Name == "GoldPile" then
+					local gold = d:GetAttribute("GoldValue")
+					if gold <= 34.9 then
+						esp(d,Color3.fromRGB(150,150,0),"Coins ["..tostring(gold).."]","ItemESP")
+					elseif gold >= 34.9 and gold <= 99.9 then
+						esp(d,Color3.fromRGB(250,250,0),"Gold ["..tostring(gold).."]","ItemESP")
+					elseif gold >= 99.9 then
+						esp(d,Color3.fromRGB(0,250,250),"Diamonds ["..tostring(gold).."]","ItemESP")
+					end
+				end
 				if d.Name == "Crucifix" then
 					esp(d,Color3.fromRGB(0,150,150),"Crucifix","ItemESP")
 				end
@@ -286,7 +296,7 @@ function descendant(d)
 					esp(d,Color3.fromRGB(0,150,150),"Hint","ItemESP")
 				end
 				if d.Name == "LiveBreakerPolePickup" then
-					esp(d,Color3.fromRGB(150,50,0),"Breaker","ItemESP")
+					esp(d.Base.ImStuff,Color3.fromRGB(150,50,0),"Breaker","ItemESP")
 				end
 				if d.Parent == workspace and string.match(d.Name,"Moving") then
 					event:Fire("Entity",d)
@@ -298,9 +308,11 @@ function descendant(d)
 					esp(d:WaitForChild("Door"),Color3.fromRGB(170, 109, 35),tostring(tonumber(d.Parent.Name)+1),"DoorESP")
 				end
 				if d.Name == "Snare" and bools.NoSnare then
+					game.CurrentRooms.ChildAdded:Wait()
 					d:Destroy()
 				end
 				if d.Name == "DoorFake" and bools.NoDupe then
+					game.CurrentRooms.ChildAdded:Wait()
 					d:Destroy()
 				end
 			end
@@ -375,6 +387,7 @@ end)()
 connectedFunctions[#connectedFunctions+1] = workspace.CurrentCamera.ChildAdded:Connect(function(child)
 	if child then
 		if child.Name == "Screech" and bools.NoScreech then
+			wait(2)
 			child:Destroy()
 		end
 	end
