@@ -1,5 +1,5 @@
 local actualName = "Fire~Doors"
-local version = "2.0.5"
+local version = "2.0.6"
 local fullName = actualName.." ["..version.."]"
 local ppNames = {
 	["ModulePrompt"] = true,
@@ -25,7 +25,6 @@ local bools = {
 	["ItemESP"] = false,
 	["InstantInteract"] = false,
 	["NoSeek"] = false,
-	["NoScreech"] = false,
 	["NoSeekArmsAndChandelierObstructions"] = false,
 	["FullBright"] = false,
 	["NoDupe"] = false,
@@ -146,7 +145,7 @@ local function esp(target,color,text,boolName)
 			txt.BackgroundTransparency = 1
 			txt.Size = UDim2.fromScale(1,0.2)
 			txt.AnchorPoint = Vector2.new(0.5,0.5)
-			txt.Position = UDim2.fromScale(0.5,0.65)
+			txt.Position = UDim2.fromScale(0.5,0.65)wd
 			txt.Font = Font
 			txt.TextScaled = true
 			txt.TextColor3 = color
@@ -263,9 +262,9 @@ function descendant(d)
 				end
 				if d.Name == "GoldPile" then
 					local gold = d:GetAttribute("GoldValue")
-					if gold <= 34.9 then
+					if gold <= 24.9 then
 						esp(d,Color3.fromRGB(150,150,0),"Coins ["..tostring(gold).."]","ItemESP")
-					elseif gold >= 34.9 and gold <= 99.9 then
+					elseif gold >= 24.9 and gold <= 99.9 then
 						esp(d,Color3.fromRGB(250,250,0),"Gold ["..tostring(gold).."]","ItemESP")
 					elseif gold >= 99.9 then
 						esp(d,Color3.fromRGB(0,250,250),"Diamonds ["..tostring(gold).."]","ItemESP")
@@ -906,7 +905,18 @@ page:CreateSwitch("No seek",
 )
 page:CreateSwitch("No screech",
 	function(bool)
-		bools.NoSeek = bool
+		local name = "Not Screech"
+		if bool then
+			if game.ReplicatedStorage.Bricks:FindFirstChild("Screech") and game.ReplicatedStorage.EntityInfo:FindFirstChild("Screech") then
+				game.ReplicatedStorage.Bricks.Screech.Name = name
+				game.ReplicatedStorage.EntityInfo.Screech.Name = name
+			end
+		else
+			if game.ReplicatedStorage.Bricks:FindFirstChild(name) and game.ReplicatedStorage.EntityInfo:FindFirstChild(name) then
+				game.ReplicatedStorage.Bricks.Screech.Name = "Screech"
+				game.ReplicatedStorage.EntityInfo.Screech.Name = "Screech"
+			end
+		end
 	end
 )
 page:CreateSwitch("No dupe",
