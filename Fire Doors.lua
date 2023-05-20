@@ -295,7 +295,7 @@ function descendant(d)
 					esp(d,Color3.fromRGB(0,150,150),"Hint","ItemESP")
 				end
 				if d.Name == "LiveBreakerPolePickup" then
-					esp(d.Base.ImStuff,Color3.fromRGB(150,50,0),"Breaker","ItemESP")
+					esp(d.Base,Color3.fromRGB(150,50,0),"Breaker","ItemESP")
 				end
 				if d.Parent == workspace and string.match(d.Name,"Moving") then
 					event:Fire("Entity",d)
@@ -307,12 +307,18 @@ function descendant(d)
 					esp(d:WaitForChild("Door"),Color3.fromRGB(170, 109, 35),tostring(tonumber(d.Parent.Name)+1),"DoorESP")
 				end
 				if d.Name == "Snare" and bools.NoSnare then
-					game.CurrentRooms.ChildAdded:Wait()
-					d:Destroy()
+					for i,v in pairs(d:GetDescendants()) do
+						if v and v:IsA("BasePart") then
+							v.Position = Vector3.new(999999,-999999,0)		
+						end
+					end
 				end
 				if d.Name == "DoorFake" and bools.NoDupe then
-					game.CurrentRooms.ChildAdded:Wait()
-					d:Destroy()
+					for i,v in pairs(d:GetDescendants()) do
+						if v and v:IsA("BasePart") then
+							v.Position = Vector3.new(999999,-999999,0)		
+						end
+					end
 				end
 			end
 		end
