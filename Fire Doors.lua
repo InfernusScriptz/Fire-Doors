@@ -848,6 +848,17 @@ local ex2 = page:CreateSlider("Extra Speed",0,100,6,
 		extraSpeed = val
 	end
 )
+page:CreateSwitch("God mode",
+	function(bool)
+		bools.God = bool
+		inGodMode = bool
+		if inGodMode then
+			char.Collision.Position = char.Collision.Position - Vector3.new(0,10,0)
+		else
+			char.Collision.Position = char.Collision.Position + Vector3.new(0,10,0)
+		end
+	end
+)
 ex2.Visible = false
 local page = pagelist:AddPage("Interactables")
 page:CreateSwitch("Auto Interact",
@@ -939,17 +950,6 @@ page:CreateSwitch([[No seek arms and chandelier
 obstructions]],
 	function(bool)
 		bools.NoSeekArmsAndChandelierObstructions = bool
-	end
-)
-page:CreateSwitch("God mode",
-	function(bool)
-		bools.God = bool
-		inGodMode = bool
-		if inGodMode then
-			char.Collision.Position = char.Collision.Position - Vector3.new(0,10,0)
-		else
-			char.Collision.Position = char.Collision.Position + Vector3.new(0,10,0)
-		end
 	end
 )
 page:CreateLabel("God mode works only for rush, ambush and eyes")
