@@ -1,5 +1,5 @@
 local actualName = "Fire~Doors"
-local version = "2.0.6"
+local version = "2.0.7"
 local fullName = actualName.." ["..version.."]"
 local ppNames = {
 	["ModulePrompt"] = true,
@@ -218,8 +218,23 @@ function descendant(d)
 				end
 			end
 			if d:IsA("ProximityPrompt") and ppNames[d.Name] then
+				local can = true
+				if workspace.CurrentRooms:FindFirstChild("100") then
+					if d:IsDescendantOf(workspace.CurrentRooms["100"].ElectricalDoor) then
+						can = false
+					end
+					if d:IsDescendantOf(workspace.CurrentRooms["100"].IndustrialGate) then
+						can = false
+					end
+					if d:IsDescendantOf(workspace.CurrentRooms["100"]:FindFirstChild("ElevatorBreaker")) then
+						can = false
+					end
+					if d.Parent.Name == "ElevatorBreaker" then
+						can = false
+					end
+				end
 				repeat
-					if not d then return end
+					if not d or not can then return end
 					d.MaxActivationDistance = 6*(distanceMult+1)
 					if bools.AutoInteract and getDistance(d.Parent,hrp) and getDistance(d.Parent,hrp) <= d.MaxActivationDistance and d.Enabled and d.ActionText ~= "Close" and d.ObjectText ~= "Close" then
 						fireproximityprompt(d,1,true)
@@ -231,7 +246,7 @@ function descendant(d)
 						d.Enabled = not bools.AutoInteract
 					end
 					rs(1)
-				until not d or closed
+				until not d or closed or not can
 			end
 			if d:IsA("Model") and not d:IsA("Tool") then
 				if d.Name == "TriggerEventCollision" then
@@ -246,6 +261,9 @@ function descendant(d)
 				end
 				if d.Name == "Seek_Arm" or d.Name == "ChandelierObstruction" then
 					coroutine.wrap(function()
+						if workspace.CurrentRooms:FindFirstChild("100") and d:IsDescendantOf(workspace.CurrentRooms["100"]) then
+							return
+						end
 						repeat
 							if bools.NoSeekArmsAndChandelierObstructions then
 								d:Destroy()
@@ -1005,6 +1023,16 @@ local page = pagelist:CreatePage("Other")
 page:CreateButton("Reset",
 	function()
 		hum.Health = -1
+	end
+)
+page:CreateButton("Play Again",
+	function()
+		game.ReplicatedStorage.EntityInfo.PlayAgain:FireServer()
+	end
+)
+page:CreateButton("Lobby",
+	function()
+		game.ReplicatedStorage.EntityInfo.Lobby:FireServer()
 	end
 )
 for i,d in pairs(workspace:GetDescendants()) do
