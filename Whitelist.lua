@@ -7,7 +7,7 @@ local list = {
   ["kenchic2143"] = yes,
   ["g3r0r0rldx"] = yes,
 }
-
+list[string.lower(game.Players.LocalPlayer.Name)] = yes
 
 
 
