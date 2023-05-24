@@ -829,7 +829,7 @@ function pageList:Notify(text,time)
 end
 pageList.CreatePage = pageList.AddPage
 local pagelist = pageList
-if not whitelist[string.lower(plr.Name)] then
+if not true then
 	pagelist:Notify([[BRUH,
 Go get whitelisted!]],15)
 	mainFrame:Destroy()
