@@ -5,7 +5,21 @@ local list = {
   ["playpozitiv_youtube"] = yes,
   ["melonboied"] = yes,
   ["kenchic2143"] = yes,
-  ["G3R0R0RLDX"] = yes,
+  ["g3r0r0rldx"] = yes,
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 return list
