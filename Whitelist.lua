@@ -1,25 +1,14 @@
 local yes = "whitelisted"
 local no = "blacklisted"
-local list = {
-  ["godworldx"] = yes,
-  ["playpozitiv_youtube"] = yes,
-  ["melonboied"] = yes,
-  ["kenchic2143"] = yes,
-  ["g3r0r0rldx"] = yes,
+local List = {
+	["GodWorldX"] = yes,
+	["Playpozitiv_Youtube"] = yes,
+	["melonboied"] = yes,
+	["KenChic2143"] = yes,
+	["arafree2"] = yes,
 }
-list[string.lower(game.Players.LocalPlayer.Name)] = yes
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+local list = {}
+for i,v in pairs(list) do
+	list[string.lower(i)] = string.lower(v)
+end
 return list
