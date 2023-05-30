@@ -8,7 +8,7 @@ local List = {
 	["arafree2"] = yes,
 }
 local list = {}
-for i,v in pairs(list) do
+for i,v in pairs(List) do
 	list[string.lower(i)] = string.lower(v)
 end
 return list
