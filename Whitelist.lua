@@ -11,6 +11,7 @@ local List = {
 	["dzntzcuzcool"] = yes,
 	["kardinhongfan12"] = yes,
 	["roblox_games5005"] = yes,
+	["Agent_Somik"] = yes,
 }
 local list = {}
 for i,v in pairs(List) do
