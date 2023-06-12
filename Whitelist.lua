@@ -14,6 +14,7 @@ local List = {
 	["Agent_Somik"] = yes,
 	["Go_play2103"] = yes,
 	["PLAYEReeio"] = yes,
+	["sdsakhs"] = yes,
 }
 local list = {}
 for i,v in pairs(List) do
