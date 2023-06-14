@@ -23,6 +23,7 @@ local List = {
 	["hecker7443"] = yes,
 	["InfectionSmile_Fan1"]= yes,
 	["just_Misha2012"] = yes,
+	["deneme123824"] = yes,
 }
 local list = {}
 for i,v in pairs(List) do
