@@ -8,6 +8,7 @@ local List = {
 	["arafree2"] = yes,
 	["NaleyMne4ay"] = yes,
 	["squid2022d"] = yes,
+	["rechedmcvnGV"] = yes,
 	["dzntzcuzcool"] = yes,
 	["kardinhongfan12"] = yes,
 	["roblox_games5005"] = yes,
