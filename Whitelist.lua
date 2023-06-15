@@ -24,6 +24,7 @@ local List = {
 	["abdu7gamernl"] = yes,
 	["mhmdmuo"] = yes,
 	["sokucuxxxx8"] = yes,
+	["robloxkfcfc123"] = yes,
 	["hecker7443"] = yes,
 	["InfectionSmile_Fan1"]= yes,
 	["just_Misha2012"] = yes,
