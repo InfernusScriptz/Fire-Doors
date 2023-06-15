@@ -14,6 +14,7 @@ local List = {
 	["roblox_games5005"] = yes,
 	["Agent_Somik"] = yes,
 	["Go_play2103"] = yes,
+	["Galactic1662"] = yes,
 	["PLAYEReeio"] = yes,
 	["sdsakhs"] = yes,
 	["znjiuuiou"] = yes,
