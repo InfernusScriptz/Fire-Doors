@@ -10,6 +10,7 @@ local List = {
 	["squid2022d"] = yes,
 	["rechedmcvnGV"] = yes,
 	["dzntzcuzcool"] = yes,
+	["minecragy0607"] = yes,
 	["abdu7gamernl"] = yes,
 	["kardinhongfan12"] = yes,
 	["roblox_games5005"] = yes,
