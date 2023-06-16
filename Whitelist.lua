@@ -11,6 +11,7 @@ local List = {
 	["rechedmcvnGV"] = yes,
 	["PLAYERaaio"] = yes,
 	["dzntzcuzcool"] = yes,
+	["just_Misha2012"] = yes,
 	["minecragy0607"] = yes,
 	["Salvyturk12"] = yes,
 	["BaconHair13376"] = yes,
