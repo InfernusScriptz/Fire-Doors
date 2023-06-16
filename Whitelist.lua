@@ -9,6 +9,7 @@ local List = {
 	["NaleyMne4ay"] = yes,
 	["squid2022d"] = yes,
 	["rechedmcvnGV"] = yes,
+	["PLAYERaaio"] = yes,
 	["dzntzcuzcool"] = yes,
 	["minecragy0607"] = yes,
 	["BaconHair13376"] = yes,
