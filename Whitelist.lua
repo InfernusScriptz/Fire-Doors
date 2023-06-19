@@ -20,6 +20,7 @@ local List = {
 	["minecragy0607"] = yes,
 	["Salvyturk12"] = yes,
 	["Uniplayz6507"] = yes,
+	["GALAXYCHEATHUB627"] = yes,
 	["BaconHair13376"] = yes,
 	["haha_haha094"] = yes,
 	["shady123h5"] = yes,
