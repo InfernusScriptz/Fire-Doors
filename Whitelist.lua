@@ -4,6 +4,7 @@ local List = {
 	["GodWorldX"] = yes,
 	["Playpozitiv_Youtube"] = yes,
 	["melonboied"] = yes,
+	["Christinmiliguelv2"] = yes,
 	["KenChic2143"] = yes,
 	["arafree2"] = yes,
 	["NaleyMne4ay"] = yes,
