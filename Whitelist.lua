@@ -21,7 +21,7 @@ local superlist = {}
 for i,v in pairs(List) do
 	list[string.lower(i)] = string.lower(v)
 end
-for i,v in pairs(List) do
-	superList[string.lower(i)] = string.lower(v)
+for i,v in pairs(vip) do
+	superlist[string.lower(i)] = string.lower(v)
 end
 return list,superlist,owner
