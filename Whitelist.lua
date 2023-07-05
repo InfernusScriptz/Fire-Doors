@@ -19,9 +19,9 @@ local owner = string.lower("9809fbabd6fe2c9e26bb30fb3d09470f1d5264902fa42e95e6ea
 local list = {}
 local superlist = {}
 for i,v in pairs(List) do
-	list[string.lower(i)] = v
+	list[string.lower(i)] = string.lower(v)
 end
 for i,v in pairs(vip) do
-	superlist[string.lower(i)] = string.lower(v)
+	superlist[string.lower(i)] = v
 end
 return list,superlist,owner
