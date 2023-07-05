@@ -16,12 +16,4 @@ local vip = {
 	["9809fbabd6fe2c9e26bb30fb3d09470f1d5264902fa42e95e6ea86cb24b67cb5"] = true,
 }
 local owner = string.lower("9809fbabd6fe2c9e26bb30fb3d09470f1d5264902fa42e95e6ea86cb24b67cb5")
-local list = {}
-local superlist = {}
-for i,v in pairs(List) do
-	list[string.lower(i)] = string.lower(v)
-end
-for i,v in pairs(vip) do
-	superlist[string.lower(i)] = v
-end
-return list,superlist,owner
+return List,vip,owner
