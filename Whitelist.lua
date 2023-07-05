@@ -22,6 +22,6 @@ for i,v in pairs(List) do
 	list[string.lower(i)] = string.lower(v)
 end
 for i,v in pairs(List) do
-	SuperList[string.lower(i)] = string.lower(v)
+	superList[string.lower(i)] = string.lower(v)
 end
 return list,superlist,owner
