@@ -15,7 +15,7 @@ local List = {
 local vip = {
 	["9809fbabd6fe2c9e26bb30fb3d09470f1d5264902fa42e95e6ea86cb24b67cb5"] = true,
 }
-local owner = "9809fbabd6fe2c9e26bb30fb3d09470f1d5264902fa42e95e6ea86cb24b67cb5"
+local owner = string.lower("9809fbabd6fe2c9e26bb30fb3d09470f1d5264902fa42e95e6ea86cb24b67cb5")
 local list = {}
 local superlist = {}
 for i,v in pairs(List) do
